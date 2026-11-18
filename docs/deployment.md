@@ -47,6 +47,10 @@ and local deploys stay on the same release.
    Builds**. Every branch other than `main` then gets a preview URL and a pull
    request comment.
 
+   `wrangler preview` exits when the configuration has no `previews` block, so
+   `wrangler.jsonc` carries an empty one. Assets and compatibility settings
+   stay at the top level, outside `previews`.
+
 Preview builds run the same `npm run build` as production, so the analytics
 hostname check is what keeps hits from previews out of the reports.
 

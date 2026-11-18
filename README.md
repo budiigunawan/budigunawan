@@ -74,8 +74,8 @@ mode, and hands them to the pure query functions.
 
 Every pull request runs type checking, the Vitest suite, the Playwright suite
 against a production build (including axe on every route), and Lighthouse CI
-with a mobile profile. Lighthouse fails if any category is below 95 or if
-cumulative layout shift is above zero.
+with a mobile profile. Lighthouse runs each route three times and fails if the
+median of any category is below 95 or if cumulative layout shift is above zero.
 
 ## Deployment
 
