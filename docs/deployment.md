@@ -6,12 +6,12 @@ and Cloudflare accounts.
 
 [`wrangler.jsonc`](../wrangler.jsonc) is the source of truth for the Worker:
 
-| Setting              | Value                  |
-| -------------------- | ---------------------- |
-| Worker name          | `budigunawan`          |
-| Assets directory     | `./dist`               |
-| Custom domain        | `budigunawan.com`      |
-| Missing paths        | `404.html` with status 404 |
+| Setting          | Value                      |
+| ---------------- | -------------------------- |
+| Worker name      | `budigunawan`              |
+| Assets directory | `./dist`                   |
+| Custom domain    | `budigunawan.com`          |
+| Missing paths    | `404.html` with status 404 |
 
 The Worker name in the dashboard has to match `name` in `wrangler.jsonc`, or
 Workers Builds fails the deploy before it starts.
@@ -27,13 +27,13 @@ Push `main` to the public repository at `github.com/budiigunawan/budigunawan`.
    application** > **GitHub**.
 2. Pick the repository and use these build settings:
 
-   | Setting           | Value                     |
-   | ----------------- | ------------------------- |
-   | Production branch | `main`                    |
-   | Build command     | `npm run build`           |
-   | Deploy command    | `npx wrangler deploy`     |
-   | Preview command   | `npx wrangler preview`    |
-   | Root directory    | `/`                       |
+   | Setting           | Value                  |
+   | ----------------- | ---------------------- |
+   | Production branch | `main`                 |
+   | Build command     | `npm run build`        |
+   | Deploy command    | `npx wrangler deploy`  |
+   | Preview command   | `npx wrangler preview` |
+   | Root directory    | `/`                    |
 
    Workers Builds installs dependencies with `npm ci` before the build command
    runs, so the build command only builds.
@@ -69,7 +69,7 @@ The token is inlined into the HTML at build time, but the browser only adds the
 beacon when the hostname is exactly `budigunawan.com`, so preview URLs and
 local builds never report.
 
-## 4. Custom domain
+## 4. Custom domain - Launch Day Step
 
 The `routes` entry in `wrangler.jsonc` attaches `budigunawan.com` as a custom
 domain on the next deploy, which also provisions the certificate. Requirements:
