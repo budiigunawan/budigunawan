@@ -11,5 +11,8 @@
   },
   // Previews are served from workers.dev, so keep that hostname enabled. The
   // custom domain is added at launch, see docs/deployment.md.
-  "workers_dev": true
+  "workers_dev": true,
+  // `wrangler preview` refuses to run without a previews block. It can stay
+  // empty here: assets and compatibility settings belong at the top level.
+  "previews": {}
 }
