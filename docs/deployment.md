@@ -18,7 +18,7 @@ Workers Builds fails the deploy before it starts.
 
 ## 1. Public GitHub repository
 
-Push `main` to a public repository, for example `github.com/budigunawan/budigunawan.com`.
+Push `main` to the public repository at `github.com/budiigunawan/budigunawan`.
 `.scratch/` stays out of the repository — it is gitignored on purpose.
 
 ## 2. Connect the repository to a Worker
@@ -131,14 +131,16 @@ from `.github/workflows/ci.yml` must pass. In the repository, open
 Or configure it with the CLI:
 
 ```bash
-gh api --method PUT repos/budigunawan/budigunawan.com/branches/main/protection --input - <<'JSON'
+gh api --method PUT repos/budiigunawan/budigunawan/branches/main/protection --input - <<'JSON'
 {
   "required_status_checks": {
     "strict": true,
     "contexts": ["Tests and quality gates"]
   },
   "enforce_admins": true,
-  "required_pull_request_reviews": null,
+  "required_pull_request_reviews": {
+    "required_approving_review_count": 0
+  },
   "restrictions": null,
   "allow_force_pushes": false,
   "allow_deletions": false
