@@ -30,6 +30,7 @@ including Drafts while writing.
 | `npm run test:watch`      | Run unit tests in watch mode                                   |
 | `npm run test:e2e`        | Build, preview and run the Playwright suite with axe checks    |
 | `npm run test:lighthouse` | Build, preview and run the Lighthouse CI gate on key routes    |
+| `npm run deploy`          | Deploy `dist/` to Cloudflare Workers with Wrangler             |
 
 `npm run test:e2e` and `npm run test:lighthouse` start and stop the preview
 server for you, so no extra terminal is needed.
@@ -75,6 +76,32 @@ Every pull request runs type checking, the Vitest suite, the Playwright suite
 against a production build (including axe on every route), and Lighthouse CI
 with a mobile profile. Lighthouse fails if any category is below 95 or if
 cumulative layout shift is above zero.
+
+## Deployment
+
+The site is a static build served by Cloudflare Workers with static assets.
+`wrangler.jsonc` holds the Worker name (`budigunawan`), the `dist/` assets
+directory, the custom domain and the 404 handling. Workers Builds deploys it:
+
+- **Production**: every push to `main` deploys to https://budigunawan.com.
+- **Previews**: every other branch gets a preview build at
+  `<preview-name>-budigunawan.<account>.workers.dev` and a link in the pull
+  request.
+- **CI**: GitHub Actions runs the type check, Vitest, Playwright with axe and
+  the Lighthouse gate on every pull request. Branch protection on `main`
+  requires the `Tests and quality gates` check before merging.
+- **Analytics**: Cloudflare Web Analytics loads only on `budigunawan.com`. The
+  token arrives as the `PUBLIC_CF_ANALYTICS_TOKEN` build variable, and
+  `src/scripts/analytics.ts` checks the hostname before adding the beacon, so
+  previews and local builds never report.
+
+`npm run deploy` runs a one-off `wrangler deploy` from your machine (it needs
+`npx wrangler login` first); normal deploys go through Workers Builds. Build
+the site first, or Wrangler uploads a stale `dist/`.
+
+The one-time account setup — connecting the repository, the build settings, the
+analytics token, the custom domain, the `www` redirect and branch protection —
+is in [docs/deployment.md](docs/deployment.md).
 
 ## Content still to be supplied
 

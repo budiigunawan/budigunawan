@@ -14,7 +14,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "test:lighthouse": "npm run build && lhci collect && lhci assert"
+    "test:lighthouse": "npm run build && lhci collect && lhci assert",
+    "deploy": "wrangler deploy"
   },
   "dependencies": {
     "@astrojs/mdx": "^8.1.6",
@@ -31,6 +32,7 @@
     "@lhci/cli": "^0.16.1",
     "@playwright/test": "^1.65.1",
     "typescript": "^5.9.3",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "wrangler": "^4.164.0"
   }
 }

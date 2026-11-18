@@ -1,6 +1,7 @@
 ---
 import '../styles/global.css';
 import type { SiteProfile } from '../data/site';
+import { analyticsToken } from '../data/analytics';
 
 export interface Props {
   title: string;
@@ -10,6 +11,8 @@ export interface Props {
 }
 
 const { title, description, section, site } = Astro.props;
+
+const analyticsHost = new URL(site.siteUrl).hostname;
 
 const navigation = [
   { href: '/', label: 'Home', section: 'home' },
@@ -26,8 +29,13 @@ const navigation = [
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script src="../scripts/analytics.ts"></script>
   </head>
-  <body class="flex min-h-dvh flex-col">
+  <body
+    class="flex min-h-dvh flex-col"
+    data-analytics-token={analyticsToken}
+    data-analytics-host={analyticsHost}
+  >
     <a
       href="#main"
       class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:rounded focus:bg-canvas focus:px-4 focus:py-2 focus:shadow"

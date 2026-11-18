@@ -18,5 +18,10 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
+    env: {
+      // A stand-in token so the tests exercise the analytics wiring. The
+      // hostname gate keeps the beacon off the preview server.
+      PUBLIC_CF_ANALYTICS_TOKEN: 'e2e-analytics-token',
+    },
   },
 });
