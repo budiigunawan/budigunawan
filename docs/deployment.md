@@ -63,8 +63,10 @@ the cutover in step 4.
 
 1. Open **Web Analytics** in the dashboard and add `budigunawan.com`.
 2. Choose the **JS snippet** installation method and copy the `token` value out
-   of the snippet. Do not use automatic setup: the site adds the beacon itself,
-   and both together would count visits twice.
+   of the snippet. If the site was added with automatic setup, open **Manage
+   site** and switch it to **Enable with JS Snippet installation**. Automatic
+   injection adds its own beacon to every proxied response, which would count
+   each visit twice next to the one the site adds itself.
 3. In the Worker, open **Settings** > **Build** > **Build Variables and
    Secrets** and add:
 
@@ -76,7 +78,8 @@ the cutover in step 4.
 
 The token is inlined into the HTML at build time, but the browser only adds the
 beacon when the hostname is exactly `budigunawan.com`, so preview URLs and
-local builds never report.
+local builds never report. Preview builds may be built without the variable at
+all; the hostname gate keeps them clean either way.
 
 ## 4. Custom domain (launch day)
 
