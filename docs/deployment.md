@@ -6,12 +6,12 @@ and Cloudflare accounts.
 
 [`wrangler.jsonc`](../wrangler.jsonc) is the source of truth for the Worker:
 
-| Setting          | Value                      |
-| ---------------- | -------------------------- |
-| Worker name      | `budigunawan`              |
-| Assets directory | `./dist`                   |
-| Custom domain    | `budigunawan.com`          |
-| Missing paths    | `404.html` with status 404 |
+| Setting          | Value                                  |
+| ---------------- | -------------------------------------- |
+| Worker name      | `budigunawan`                          |
+| Assets directory | `./dist`                               |
+| Custom domain    | `budigunawan.com` (added at launch)    |
+| Missing paths    | `404.html` with status 404             |
 
 The Worker name in the dashboard has to match `name` in `wrangler.jsonc`, or
 Workers Builds fails the deploy before it starts.
@@ -50,6 +50,11 @@ and local deploys stay on the same release.
 Preview builds run the same `npm run build` as production, so the analytics
 hostname check is what keeps hits from previews out of the reports.
 
+Until launch the production deploy lands on
+`https://budigunawan.<account-subdomain>.workers.dev`, because `wrangler.jsonc`
+has no `routes` entry yet. The old site stays live on `budigunawan.com` until
+the cutover in step 4.
+
 ## 3. Cloudflare Web Analytics
 
 1. Open **Web Analytics** in the dashboard and add `budigunawan.com`.
@@ -69,14 +74,28 @@ The token is inlined into the HTML at build time, but the browser only adds the
 beacon when the hostname is exactly `budigunawan.com`, so preview URLs and
 local builds never report.
 
-## 4. Custom domain - Launch Day Step
+## 4. Custom domain (launch day)
 
-The `routes` entry in `wrangler.jsonc` attaches `budigunawan.com` as a custom
-domain on the next deploy, which also provisions the certificate. Requirements:
+The old site still owns `budigunawan.com`, so the Worker deploys to its
+`workers.dev` hostname until this cutover. Do it in this order:
 
-- The `budigunawan.com` zone lives in the same Cloudflare account as the Worker.
-- If an existing proxied DNS record points the apex elsewhere, remove it first;
-  a custom domain cannot be attached to a hostname that is already routed.
+1. Open **Rules** > **Redirect Rules** and delete any apex-to-`www` rule you
+   find. The old host's redirect disappears with its DNS, but a Cloudflare rule
+   would fight the `www` redirect in step 5.
+2. In **DNS**, delete the apex `A`/`AAAA`/`CNAME` records and the `www` CNAME
+   that point at the old host. A custom domain cannot be attached while a DNS
+   record for the hostname exists.
+3. Add the route back in a pull request and merge it:
+
+   ```jsonc
+   "routes": [
+     { "pattern": "budigunawan.com", "custom_domain": true }
+   ]
+   ```
+
+4. The next deploy attaches `budigunawan.com` and provisions the certificate.
+   The zone has to be in the same Cloudflare account as the Worker.
+5. Continue with the `www` redirect below.
 
 Check it after the deploy:
 
