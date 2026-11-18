@@ -81,9 +81,12 @@ cumulative layout shift is above zero.
 
 The site is a static build served by Cloudflare Workers with static assets.
 `wrangler.jsonc` holds the Worker name (`budigunawan`), the `dist/` assets
-directory, the custom domain and the 404 handling. Workers Builds deploys it:
+directory and the 404 handling; the custom domain is added at launch. Workers
+Builds deploys it:
 
-- **Production**: every push to `main` deploys to https://budigunawan.com.
+- **Production**: every push to `main` deploys. Until the cutover the site
+  lives on the Worker's `workers.dev` hostname, while the old site keeps
+  `budigunawan.com`.
 - **Previews**: every other branch gets a preview build at
   `<preview-name>-budigunawan.<account>.workers.dev` and a link in the pull
   request.

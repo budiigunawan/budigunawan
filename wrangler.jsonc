@@ -9,13 +9,7 @@
     "html_handling": "drop-trailing-slash",
     "not_found_handling": "404-page"
   },
-  "routes": [
-    {
-      "pattern": "budigunawan.com",
-      "custom_domain": true
-    }
-  ],
-  // Previews are served from workers.dev, so keep that hostname enabled even
-  // though production is on the custom domain.
+  // Previews are served from workers.dev, so keep that hostname enabled. The
+  // custom domain is added at launch, see docs/deployment.md.
   "workers_dev": true
 }
