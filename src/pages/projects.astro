@@ -1,0 +1,18 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getContent } from '../lib/content';
+
+const { site } = await getContent();
+---
+
+<BaseLayout
+  title={`Projects — ${site.name}`}
+  description={`Projects built by ${site.name}.`}
+  section="projects"
+  site={site}
+>
+  <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Projects</h1>
+  <p class="mt-6 max-w-prose text-lg leading-relaxed text-muted">
+    Projects Budi has built will be listed here.
+  </p>
+</BaseLayout>

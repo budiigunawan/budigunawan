@@ -1,0 +1,22 @@
+# build output
+dist/
+.astro/
+
+# dependencies
+node_modules/
+
+# local planning and specs are not part of the public repo
+.scratch/
+
+# test output
+test-results/
+playwright-report/
+.lighthouseci/
+
+# environment
+.env
+.env.production.local
+*.local
+
+# macOS
+.DS_Store
