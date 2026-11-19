@@ -26,6 +26,7 @@ describe('Experience timeline', () => {
     const content = createContentQueries(
       {
         posts: [],
+        projects: [],
         experience: [
           experience({
             id: 'ongoing-since-2018',
@@ -57,6 +58,7 @@ describe('Experience timeline', () => {
     const content = createContentQueries(
       {
         posts: [],
+        projects: [],
         experience: [
           experience({ id: 'ongoing-older', startDate: new Date('2019-02-01') }),
           experience({ id: 'ongoing-newer', startDate: new Date('2023-05-01') }),
@@ -75,6 +77,7 @@ describe('Experience timeline', () => {
     const content = createContentQueries(
       {
         posts: [],
+        projects: [],
         experience: [
           experience({
             id: 'past-2017-2019',
