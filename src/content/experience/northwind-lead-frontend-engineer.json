@@ -1,0 +1,11 @@
+{
+  "company": "Northwind Studio",
+  "title": "Lead Frontend Engineer",
+  "location": "Remote",
+  "startDate": "2022-04",
+  "highlights": [
+    "Lead a small frontend team building a design-system-driven product suite.",
+    "Cut initial page load by more than half by moving rendering work off the critical path.",
+    "Set the accessibility bar for the codebase: every release ships with axe checks in CI."
+  ]
+}

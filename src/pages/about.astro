@@ -2,7 +2,15 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { getContent } from '../lib/content';
 
-const { site } = await getContent();
+const { site, experienceTimeline } = await getContent();
+
+const monthYear = new Intl.DateTimeFormat('en', {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+const monthValue = (date: Date) => date.toISOString().slice(0, 7);
 ---
 
 <BaseLayout
@@ -11,7 +19,57 @@ const { site } = await getContent();
   section="about"
   site={site}
 >
-  <p class="eyebrow">About</p>
-  <h1 class="mt-4 text-3xl font-normal tracking-[-0.01em] sm:text-4xl">About</h1>
-  <p class="mt-6 max-w-prose text-lg text-muted">{site.bioSummary}</p>
+  <div class="max-w-2xl">
+    <p class="eyebrow">About</p>
+    <h1 class="mt-4 text-3xl font-normal tracking-[-0.01em] sm:text-4xl">About</h1>
+    <p class="mt-6 max-w-prose text-lg text-muted">{site.bioSummary}</p>
+    <p class="mt-8">
+      <a class="cta-primary" href="/cv">Download CV</a>
+    </p>
+  </div>
+
+  {
+    experienceTimeline.length > 0 && (
+      <section aria-labelledby="experience-heading" class="mt-16 max-w-2xl">
+        <h2 id="experience-heading" class="text-2xl font-normal tracking-[-0.01em]">
+          Experience
+        </h2>
+        <ol class="mt-8 border-l border-line [&>li+li]:mt-10">
+          {experienceTimeline.map((role) => (
+            <li class="relative pl-6">
+              <span
+                aria-hidden="true"
+                class="absolute top-1.5 left-0 size-1.5 -translate-x-1/2 rounded-full bg-line-strong"
+              ></span>
+              <p class="text-sm text-muted">
+                <time datetime={monthValue(role.data.startDate)}>
+                  {monthYear.format(role.data.startDate)}
+                </time>
+                {' — '}
+                {role.data.endDate ? (
+                  <time datetime={monthValue(role.data.endDate)}>
+                    {monthYear.format(role.data.endDate)}
+                  </time>
+                ) : (
+                  'Present'
+                )}
+              </p>
+              <h3 class="mt-2 text-lg font-medium">{role.data.title}</h3>
+              <p class="mt-1 text-muted">
+                {role.data.company}
+                {role.data.location && `, ${role.data.location}`}
+              </p>
+              {role.data.highlights.length > 0 && (
+                <ul class="mt-4 list-disc space-y-1.5 pl-5 text-muted marker:text-line-strong">
+                  {role.data.highlights.map((highlight) => (
+                    <li>{highlight}</li>
+                  ))}
+                </ul>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+    )
+  }
 </BaseLayout>

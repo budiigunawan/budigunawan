@@ -3,10 +3,17 @@ import { siteProfile, type SiteProfile } from '../../data/site';
 import {
   createContentQueries,
   type ContentMode,
+  type ExperienceEntry,
   type PostEntry,
 } from './query';
 
-export type { ContentMode, PostData, PostEntry } from './query';
+export type {
+  ContentMode,
+  ExperienceData,
+  ExperienceEntry,
+  PostData,
+  PostEntry,
+} from './query';
 
 export interface Content extends ReturnType<typeof createContentQueries> {
   mode: ContentMode;
@@ -19,11 +26,12 @@ export interface Content extends ReturnType<typeof createContentQueries> {
  */
 export async function getContent(): Promise<Content> {
   const mode: ContentMode = import.meta.env.DEV ? 'development' : 'production';
-  const entries: PostEntry[] = await getCollection('posts');
+  const posts: PostEntry[] = await getCollection('posts');
+  const experience: ExperienceEntry[] = await getCollection('experience');
 
   return {
     mode,
     site: siteProfile,
-    ...createContentQueries({ posts: entries }, mode),
+    ...createContentQueries({ posts, experience }, mode),
   };
 }

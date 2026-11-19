@@ -14,4 +14,22 @@ const posts = defineCollection({
   }),
 });
 
-export const collections = { posts };
+const experience = defineCollection({
+  loader: glob({ pattern: '*.json', base: './src/content/experience' }),
+  schema: z
+    .object({
+      company: z.string().min(1),
+      title: z.string().min(1),
+      startDate: z.coerce.date(),
+      /** Missing means the role is ongoing. */
+      endDate: z.coerce.date().optional(),
+      location: z.string().min(1).optional(),
+      highlights: z.array(z.string().min(1)).default([]),
+    })
+    .refine((role) => role.endDate === undefined || role.endDate >= role.startDate, {
+      message: 'endDate must not be earlier than startDate',
+      path: ['endDate'],
+    }),
+});
+
+export const collections = { posts, experience };

@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { createContentQueries, type PostEntry } from '../../src/lib/content/query';
+import {
+  createContentQueries,
+  type ContentMode,
+  type PostEntry,
+} from '../../src/lib/content/query';
+
+/** These cases only exercise Posts, so Experience entries stay out of the way. */
+function queries(posts: PostEntry[], mode: ContentMode) {
+  return createContentQueries({ posts, experience: [] }, mode);
+}
 
 function post(
   overrides: Partial<PostEntry['data']> & { id?: string; body?: string } = {},
@@ -22,8 +31,8 @@ function post(
 
 describe('published Posts', () => {
   it('excludes Drafts in production', () => {
-    const content = createContentQueries(
-      { posts: [post({ id: 'published' }), post({ id: 'unfinished', draft: true })] },
+    const content = queries(
+      [post({ id: 'published' }), post({ id: 'unfinished', draft: true })],
       'production',
     );
 
@@ -31,8 +40,8 @@ describe('published Posts', () => {
   });
 
   it('includes Drafts, still flagged as drafts, in development', () => {
-    const content = createContentQueries(
-      { posts: [post({ id: 'published' }), post({ id: 'unfinished', draft: true })] },
+    const content = queries(
+      [post({ id: 'published' }), post({ id: 'unfinished', draft: true })],
       'development',
     );
 
@@ -44,14 +53,12 @@ describe('published Posts', () => {
   });
 
   it('sorts published Posts newest first', () => {
-    const content = createContentQueries(
-      {
-        posts: [
-          post({ id: 'oldest', publishDate: new Date('2025-01-01') }),
-          post({ id: 'newest', publishDate: new Date('2026-06-01') }),
-          post({ id: 'middle', publishDate: new Date('2025-09-01') }),
-        ],
-      },
+    const content = queries(
+      [
+        post({ id: 'oldest', publishDate: new Date('2025-01-01') }),
+        post({ id: 'newest', publishDate: new Date('2026-06-01') }),
+        post({ id: 'middle', publishDate: new Date('2025-09-01') }),
+      ],
       'production',
     );
 
@@ -65,23 +72,20 @@ describe('published Posts', () => {
 
 describe('Blog visibility', () => {
   it('is false when there are no Posts', () => {
-    const content = createContentQueries({ posts: [] }, 'production');
+    const content = queries([], 'production');
 
     expect(content.isBlogVisible).toBe(false);
   });
 
   it('is false when every Post is a Draft', () => {
-    const content = createContentQueries(
-      { posts: [post({ id: 'unfinished', draft: true })] },
-      'production',
-    );
+    const content = queries([post({ id: 'unfinished', draft: true })], 'production');
 
     expect(content.isBlogVisible).toBe(false);
   });
 
   it('is true once a Post is published', () => {
-    const content = createContentQueries(
-      { posts: [post({ id: 'published' }), post({ id: 'unfinished', draft: true })] },
+    const content = queries(
+      [post({ id: 'published' }), post({ id: 'unfinished', draft: true })],
       'production',
     );
 
@@ -91,15 +95,13 @@ describe('Blog visibility', () => {
 
 describe('latest Posts', () => {
   it('returns the newest n published Posts', () => {
-    const content = createContentQueries(
-      {
-        posts: [
-          post({ id: 'third', publishDate: new Date('2025-01-01') }),
-          post({ id: 'latest', publishDate: new Date('2026-03-01') }),
-          post({ id: 'draft', publishDate: new Date('2026-09-01'), draft: true }),
-          post({ id: 'second', publishDate: new Date('2025-06-01') }),
-        ],
-      },
+    const content = queries(
+      [
+        post({ id: 'third', publishDate: new Date('2025-01-01') }),
+        post({ id: 'latest', publishDate: new Date('2026-03-01') }),
+        post({ id: 'draft', publishDate: new Date('2026-09-01'), draft: true }),
+        post({ id: 'second', publishDate: new Date('2025-06-01') }),
+      ],
       'production',
     );
 
@@ -114,7 +116,7 @@ describe('reading time', () => {
   const words = (count: number) => Array.from({ length: count }, () => 'word').join(' ');
 
   it('rounds up to whole minutes at 200 words per minute', () => {
-    const content = createContentQueries({ posts: [] }, 'production');
+    const content = queries([], 'production');
 
     expect(content.readingTime(post({ body: words(200) }))).toBe(1);
     expect(content.readingTime(post({ body: words(201) }))).toBe(2);
@@ -122,7 +124,7 @@ describe('reading time', () => {
   });
 
   it('is at least one minute for an empty body', () => {
-    const content = createContentQueries({ posts: [] }, 'production');
+    const content = queries([], 'production');
 
     expect(content.readingTime(post({ body: undefined }))).toBe(1);
     expect(content.readingTime(post({ body: '   ' }))).toBe(1);
