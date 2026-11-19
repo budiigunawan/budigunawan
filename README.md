@@ -45,13 +45,18 @@ npx playwright install chromium
 
 ```
 src/
+├── components/
+│   ├── ExternalLink.astro    # Marks links that leave the site
+│   └── ThemeToggle.tsx       # Theme island
 ├── content.config.ts         # Content collection schemas
 ├── content/                  # Content entries (Posts live here)
 ├── data/site.ts              # Site profile: name, role, pitch, social links
-├── layouts/BaseLayout.astro  # Landmarks, navigation, footer
-├── lib/content/
-│   ├── query.ts              # Pure content query module (entries + mode in, data out)
-│   └── index.ts              # Adapter over Astro's collection loader
+├── layouts/BaseLayout.astro  # Landmarks, navigation, footer, inline theme script
+├── lib/
+│   ├── content/
+│   │   ├── query.ts          # Pure content query module (entries + mode in, data out)
+│   │   └── index.ts          # Adapter over Astro's collection loader
+│   └── theme.ts              # Theme resolution and storage helpers
 ├── pages/                    # Routes
 └── styles/global.css         # Tailwind entry point and design tokens
 tests/
@@ -62,6 +67,28 @@ tests/
 Pages never read collections directly. They call `getContent()` from
 `src/lib/content`, which loads entries, applies the production or development
 mode, and hands them to the pure query functions.
+
+## Design system
+
+Design tokens live in `src/styles/global.css`. The `@theme` block defines the
+type scale, spacing base, page width, radii, easing, motion durations and
+animations; semantic colour tokens (`canvas`, `surface`, `ink`, `muted`, `line`,
+`accent`, `on-accent` and the `code-*` surfaces) alias a light and a dark
+palette. Change a palette value and every page follows.
+
+- **Theme**: the inline script in `BaseLayout.astro` resolves the stored choice
+  first, then the system preference, and writes `data-theme` on `<html>` before
+  the first paint. The `ThemeToggle` island writes the choice to `localStorage`
+  under `theme`; if storage is blocked the switch still holds for the visit.
+  Without a stored choice, the page follows later system changes.
+- **Typography**: Inter (UI and body) and Newsreader (headings) are self-hosted
+  from `public/fonts`, preloaded, and paired with metric-matched fallback faces
+  so a font swap causes no layout shift. Both families are licensed under the
+  SIL Open Font License; the licence files sit beside the font files.
+- **Motion**: durations and easing come from the theme; every animation is
+  removed and transitions are zeroed under `prefers-reduced-motion: reduce`.
+- **Links**: use `ExternalLink.astro` for links that leave the site. It adds a
+  visible arrow and a screen-reader "(external)" note.
 
 ## Content
 

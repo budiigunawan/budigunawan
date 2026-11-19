@@ -1,26 +1,31 @@
 import AxeBuilder from '@axe-core/playwright';
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
+import { routes } from './routes';
 
-const routes = ['/', '/about', '/projects'];
+const themes = ['light', 'dark'] as const;
 
-for (const route of routes) {
-  test(`axe reports no violations on ${route}`, async ({ page }) => {
-    await page.goto(route);
-
-    const results = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-      .analyze();
-
-    expect(results.violations).toEqual([]);
-  });
+async function useTheme(page: Page, theme: (typeof themes)[number]) {
+  await page.addInitScript((value) => {
+    try {
+      localStorage.setItem('theme', value);
+    } catch {
+      // Storage is optional; the theme still resolves from the system preference.
+    }
+  }, theme);
 }
 
-test('axe reports no violations on the not-found page', async ({ page }) => {
-  await page.goto('/no-such-page');
+for (const theme of themes) {
+  for (const route of routes) {
+    test(`axe reports no violations on ${route} (${theme} theme)`, async ({ page }) => {
+      await useTheme(page, theme);
+      await page.goto(route);
+      await expect(page.locator('html')).toHaveAttribute('data-theme', theme);
 
-  const results = await new AxeBuilder({ page })
-    .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
-    .analyze();
+      const results = await new AxeBuilder({ page })
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
 
-  expect(results.violations).toEqual([]);
-});
+      expect(results.violations).toEqual([]);
+    });
+  }
+}

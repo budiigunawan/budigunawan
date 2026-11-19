@@ -11,6 +11,7 @@ const { site } = await getContent();
   section="about"
   site={site}
 >
-  <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">About</h1>
-  <p class="mt-6 max-w-prose text-lg leading-relaxed">{site.bioSummary}</p>
+  <p class="eyebrow">About</p>
+  <h1 class="mt-4 text-3xl font-normal tracking-[-0.01em] sm:text-4xl">About</h1>
+  <p class="mt-6 max-w-prose text-lg text-muted">{site.bioSummary}</p>
 </BaseLayout>

@@ -1,28 +1,249 @@
 @import 'tailwindcss';
 
-@theme {
-  --font-sans:
-    ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
-  --color-canvas: oklch(1 0 0);
-  --color-ink: oklch(0.22 0.01 260);
-  --color-muted: oklch(0.46 0.01 260);
-  --color-line: oklch(0.9 0.005 260);
-  --color-accent: oklch(0.45 0.16 260);
+/*
+ * Self-hosted variable fonts. The fallback faces carry metrics measured from
+ * the real faces so a swap causes no layout shift.
+ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/inter-latin-variable.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Inter Fallback';
+  src: local('Arial'), local('Helvetica Neue'), local('Liberation Sans');
+  size-adjust: 107.12%;
+  ascent-override: 90.43%;
+  descent-override: 22.52%;
+  line-gap-override: 0%;
+}
+
+@font-face {
+  font-family: 'Newsreader';
+  font-style: normal;
+  font-weight: 200 800;
+  font-display: swap;
+  src: url('/fonts/newsreader-latin-variable.woff2') format('woff2-variations');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Newsreader Fallback';
+  src: local('Georgia'), local('Times New Roman'), local('Liberation Serif');
+  size-adjust: 96.12%;
+  ascent-override: 76.47%;
+  descent-override: 27.57%;
+  line-gap-override: 0%;
+}
+
+@theme {
+  --font-sans: 'Inter', 'Inter Fallback', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader', 'Newsreader Fallback', Georgia, 'Times New Roman', serif;
+
+  --spacing: 0.25rem;
+
+  --container-page: 64rem;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1.5;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.55;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.65;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.6;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 1.4;
+  --text-2xl: 1.875rem;
+  --text-2xl--line-height: 1.25;
+  --text-3xl: 2.375rem;
+  --text-3xl--line-height: 1.15;
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.05;
+  --text-display: clamp(3rem, 11vw, 5.75rem);
+  --text-display--line-height: 0.98;
+
+  --tracking-eyebrow: 0.16em;
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-pill: 999px;
+
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --motion-fast: 140ms;
+  --motion-base: 240ms;
+  --motion-slow: 520ms;
+
+  --animate-rise: rise var(--motion-slow) var(--ease-out-soft) both;
+
+  /* Transform-only so text keeps full contrast while it moves. */
+  @keyframes rise {
+    from {
+      transform: translateY(0.75rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+}
+
+/*
+ * Semantic colour tokens. Every text pairing below is checked by axe in both
+ * themes; the light palette holds at least 6:1 and the dark palette at least
+ * 7:1 for body text against its own surfaces.
+ */
+@theme inline {
+  --color-canvas: var(--palette-canvas);
+  --color-surface: var(--palette-surface);
+  --color-ink: var(--palette-ink);
+  --color-muted: var(--palette-muted);
+  --color-line: var(--palette-line);
+  --color-line-strong: var(--palette-line-strong);
+  --color-accent: var(--palette-accent);
+  --color-accent-strong: var(--palette-accent-strong);
+  --color-on-accent: var(--palette-on-accent);
+  --color-code-canvas: var(--palette-code-canvas);
+  --color-code-ink: var(--palette-code-ink);
+  --color-code-line: var(--palette-code-line);
 }
 
 @layer base {
+  :root {
+    color-scheme: light;
+
+    --palette-canvas: oklch(0.985 0.004 85);
+    --palette-surface: oklch(0.955 0.006 85);
+    --palette-ink: oklch(0.235 0.012 265);
+    --palette-muted: oklch(0.475 0.012 265);
+    --palette-line: oklch(0.89 0.006 85);
+    --palette-line-strong: oklch(0.62 0.01 265);
+    --palette-accent: oklch(0.47 0.15 262);
+    --palette-accent-strong: oklch(0.42 0.15 262);
+    --palette-on-accent: oklch(0.99 0.003 85);
+    --palette-code-canvas: oklch(0.965 0.005 265);
+    --palette-code-ink: oklch(0.25 0.012 265);
+    --palette-code-line: oklch(0.9 0.008 265);
+  }
+
+  html[data-theme='dark'] {
+    color-scheme: dark;
+
+    --palette-canvas: oklch(0.19 0.012 265);
+    --palette-surface: oklch(0.235 0.012 265);
+    --palette-ink: oklch(0.945 0.004 85);
+    --palette-muted: oklch(0.76 0.012 265);
+    --palette-line: oklch(0.32 0.012 265);
+    --palette-line-strong: oklch(0.52 0.015 265);
+    --palette-accent: oklch(0.78 0.11 262);
+    --palette-accent-strong: oklch(0.85 0.09 262);
+    --palette-on-accent: oklch(0.19 0.012 265);
+    --palette-code-canvas: oklch(0.15 0.012 265);
+    --palette-code-ink: oklch(0.93 0.004 85);
+    --palette-code-line: oklch(0.29 0.012 265);
+  }
+
   html {
     -webkit-text-size-adjust: 100%;
+    background-color: var(--palette-canvas);
   }
 
   body {
-    @apply bg-canvas text-ink font-sans antialiased;
+    @apply bg-canvas font-sans text-base text-ink antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-serif text-balance;
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--palette-accent) 22%, var(--palette-canvas));
   }
 
   :focus-visible {
     outline: 2px solid var(--color-accent);
-    outline-offset: 2px;
+    outline-offset: 3px;
+  }
+
+  code,
+  kbd,
+  samp,
+  pre {
+    @apply font-mono;
+  }
+
+  pre {
+    @apply overflow-x-auto rounded-md border border-code-line bg-code-canvas p-4 text-sm text-code-ink;
+  }
+}
+
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-page px-5 sm:px-8;
+  }
+
+  .eyebrow {
+    @apply text-xs font-medium tracking-[var(--tracking-eyebrow)] text-muted uppercase;
+  }
+
+  .link {
+    @apply underline decoration-line-strong decoration-1 underline-offset-4 transition-colors duration-(--motion-fast) hover:text-accent hover:decoration-accent;
+  }
+
+  .cta-primary {
+    @apply inline-flex items-center gap-2 rounded-pill bg-accent px-5 py-2.5 text-sm font-medium text-on-accent transition-colors duration-(--motion-fast) hover:bg-accent-strong;
+  }
+
+  .cta-secondary {
+    @apply inline-flex items-center gap-2 text-sm font-medium text-ink underline decoration-accent decoration-1 underline-offset-[6px] transition-colors duration-(--motion-fast) hover:text-accent hover:decoration-accent;
+  }
+
+  .external-link__mark {
+    @apply ml-0.5 inline-block text-[0.75em] leading-none text-muted;
+  }
+
+  .theme-toggle {
+    @apply inline-flex size-10 items-center justify-center rounded-pill border border-line-strong text-ink transition-colors duration-(--motion-fast) hover:border-accent hover:text-accent;
+  }
+
+  .theme-toggle__icon {
+    @apply size-[1.125rem];
+  }
+
+  .theme-toggle__icon--sun {
+    display: none;
+  }
+
+  html[data-theme='dark'] .theme-toggle__icon--sun {
+    display: block;
+  }
+
+  html[data-theme='dark'] .theme-toggle__icon--moon {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation: none !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -9,6 +9,20 @@ test('Home introduces Budi with name, role and pitch', async ({ page }) => {
   await expect(page.getByText(siteProfile.pitch)).toBeVisible();
 });
 
+test('Home leads to Projects, the CV and contact', async ({ page }) => {
+  await page.goto('/');
+
+  await expect(page.getByRole('link', { name: /view projects/i })).toHaveAttribute(
+    'href',
+    '/projects',
+  );
+  await expect(page.getByRole('link', { name: /download cv/i })).toHaveAttribute('href', '/cv');
+  await expect(page.getByRole('link', { name: /get in touch/i })).toHaveAttribute(
+    'href',
+    `mailto:${siteProfile.email}`,
+  );
+});
+
 test('navigation reaches every section and marks the current one', async ({ page }) => {
   await page.goto('/about');
 
@@ -65,5 +79,9 @@ test('unknown URLs show the not-found page', async ({ page }) => {
 
   expect(response?.status()).toBe(404);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Page not found');
-  await expect(page.getByRole('link', { name: 'home page' })).toHaveAttribute('href', '/');
+
+  const main = page.getByRole('main');
+  await expect(main.getByRole('link', { name: 'Home' })).toHaveAttribute('href', '/');
+  await expect(main.getByRole('link', { name: 'About' })).toHaveAttribute('href', '/about');
+  await expect(main.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects');
 });

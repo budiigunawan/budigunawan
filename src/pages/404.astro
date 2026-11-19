@@ -10,9 +10,19 @@ const { site } = await getContent();
   description="That page does not exist."
   site={site}
 >
-  <h1 class="text-3xl font-semibold tracking-tight sm:text-4xl">Page not found</h1>
-  <p class="mt-6 max-w-prose text-lg leading-relaxed">
-    That URL does not exist. Head back to the
-    <a href="/">home page</a> to find your way.
-  </p>
+  <div class="max-w-xl">
+    <p class="eyebrow">Error 404</p>
+    <h1 class="mt-4 text-4xl font-normal tracking-[-0.01em] sm:text-5xl">Page not found</h1>
+    <p class="mt-6 text-lg text-muted">
+      That URL does not exist. It may have moved, or the link that brought you here may be out of
+      date. These pages will get you back on track.
+    </p>
+
+    <ul class="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm">
+      <li><a class="cta-secondary" href="/">Home</a></li>
+      <li><a class="cta-secondary" href="/projects">Projects</a></li>
+      <li><a class="cta-secondary" href="/about">About</a></li>
+      <li><a class="link" href={`mailto:${site.email}`}>Email Budi</a></li>
+    </ul>
+  </div>
 </BaseLayout>
