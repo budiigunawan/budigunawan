@@ -1,0 +1,11 @@
+{
+  "company": "Fabrikam Labs",
+  "title": "Frontend Engineer",
+  "location": "Jakarta, Indonesia",
+  "startDate": "2019-01",
+  "endDate": "2022-03",
+  "highlights": [
+    "Built the customer-facing dashboard and its component library.",
+    "Worked with backend engineers to keep the data layer and the UI in step."
+  ]
+}

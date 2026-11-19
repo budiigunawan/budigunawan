@@ -40,6 +40,8 @@ test('the analytics beacon loads on the production hostname only', async ({ page
   });
 
   await page.goto(`${productionOrigin}/`);
+  // Let every proxied subresource settle, so no route handler outlives the test.
+  await page.waitForLoadState('networkidle');
 
   const token = await page.locator('body').getAttribute('data-analytics-token');
   test.skip(!token, 'This build has no analytics token, so there is no beacon to load');

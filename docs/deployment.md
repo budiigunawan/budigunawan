@@ -16,6 +16,16 @@ and Cloudflare accounts.
 The Worker name in the dashboard has to match `name` in `wrangler.jsonc`, or
 Workers Builds fails the deploy before it starts.
 
+## Static asset rules
+
+`public/_headers` is read by Cloudflare at deploy time instead of being served
+as an asset. It declares response headers: the `application/pdf` content type on
+`/cv`, because the PDF is emitted as the extensionless `dist/cv` asset. Without
+it, browsers receive the CV with no content type.
+
+`npm run test:e2e` serves `dist/` through `wrangler dev`, so these rules are
+covered by the browser tests and not only by the deploy.
+
 ## 1. Public GitHub repository
 
 Push `main` to the public repository at `github.com/budiigunawan/budigunawan`.
@@ -177,6 +187,8 @@ JSON
 ## 7. Verify
 
 - [ ] `https://budigunawan.com` serves the site over HTTPS.
+- [ ] `curl -sI https://budigunawan.com/cv | grep -i content-type` reports
+      `application/pdf`.
 - [ ] `https://www.budigunawan.com/about` redirects with a 301 to
       `https://budigunawan.com/about`.
 - [ ] Merging to `main` deploys; a branch push produces a preview URL.

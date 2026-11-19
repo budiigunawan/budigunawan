@@ -28,12 +28,14 @@ including Drafts while writing.
 | `npm run check`           | Type-check Astro and TypeScript files                          |
 | `npm test`                | Run unit tests with Vitest                                     |
 | `npm run test:watch`      | Run unit tests in watch mode                                   |
-| `npm run test:e2e`        | Build, preview and run the Playwright suite with axe checks    |
+| `npm run test:e2e`        | Build, serve with Wrangler and run the Playwright suite with axe checks |
 | `npm run test:lighthouse` | Build, preview and run the Lighthouse CI gate on key routes    |
 | `npm run deploy`          | Deploy `dist/` to Cloudflare Workers with Wrangler             |
 
-`npm run test:e2e` and `npm run test:lighthouse` start and stop the preview
-server for you, so no extra terminal is needed.
+`npm run test:e2e` builds the site and serves `dist/` with Wrangler, so the
+Cloudflare asset rules in `public/` are part of the test. `npm run
+test:lighthouse` uses `astro preview`. Both start and stop their server for you,
+so no extra terminal is needed.
 
 The browser tests need the Chromium browser once:
 
@@ -49,7 +51,7 @@ src/
 │   ├── ExternalLink.astro    # Marks links that leave the site
 │   └── ThemeToggle.tsx       # Theme island
 ├── content.config.ts         # Content collection schemas
-├── content/                  # Content entries (Posts live here)
+├── content/                  # Content entries: Posts (MDX) and Experience (JSON)
 ├── data/site.ts              # Site profile: name, role, pitch, social links
 ├── layouts/BaseLayout.astro  # Landmarks, navigation, footer, inline theme script
 ├── lib/
@@ -96,13 +98,20 @@ palette. Change a palette value and every page follows.
   canonical URL, default social image) live in `src/data/site.ts`.
 - Posts are MDX files in `src/content/posts/`. A Post with `draft: true` is
   visible in development and never in a production build.
+- Experience entries are JSON files in `src/content/experience/`, one role per
+  file, validated against the collection schema. A role with no `endDate` is
+  ongoing; the About timeline lists ongoing roles first, then the rest by start
+  date descending. Invalid dates or missing required fields fail the build.
+- The CV is a single PDF at `public/cv.pdf`, served at the stable `/cv` URL.
+  Replace that one file and the URL picks up the new version on the next deploy.
 
 ## Quality gates
 
 Every pull request runs type checking, the Vitest suite, the Playwright suite
-against a production build (including axe on every route), and Lighthouse CI
-with a mobile profile. Lighthouse runs each route three times and fails if the
-median of any category is below 95 or if cumulative layout shift is above zero.
+against a production build served by Wrangler (including axe on every route),
+and Lighthouse CI with a mobile profile. Lighthouse runs each route three times
+and fails if the median of any category is below 95 or if cumulative layout
+shift is above zero.
 
 ## Deployment
 
@@ -137,4 +146,6 @@ is in [docs/deployment.md](docs/deployment.md).
 
 The Site profile and the pages currently use placeholder values. Before launch,
 replace the profile details in `src/data/site.ts` with Budi's real email, GitHub
-and LinkedIn URLs, and swap `public/og-default.png` for the final social image.
+and LinkedIn URLs, swap `public/og-default.png` for the final social image, put
+the real CV in place of `public/cv.pdf`, and replace the placeholder Experience
+entries in `src/content/experience/`.

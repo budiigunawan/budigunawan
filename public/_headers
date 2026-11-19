@@ -1,0 +1,4 @@
+# Cloudflare Workers static assets cannot infer a content type for the
+# extensionless `/cv` asset that src/pages/cv.ts emits, so state it here.
+/cv
+  Content-Type: application/pdf

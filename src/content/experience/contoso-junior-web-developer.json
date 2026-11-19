@@ -1,0 +1,11 @@
+{
+  "company": "Contoso Web Agency",
+  "title": "Junior Web Developer",
+  "location": "Jakarta, Indonesia",
+  "startDate": "2016-06",
+  "endDate": "2018-12",
+  "highlights": [
+    "Delivered client sites end to end, from markup to deployment.",
+    "Learned to ship small, reviewable changes on tight deadlines."
+  ]
+}

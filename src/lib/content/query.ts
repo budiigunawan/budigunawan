@@ -19,12 +19,24 @@ export interface PostEntry {
   body?: string;
 }
 
-export interface ContentEntries {
-  posts: PostEntry[];
+/** The Experience shape, derived from the collection schema so the two cannot drift. */
+export type ExperienceData = CollectionEntry<'experience'>['data'];
+
+export interface ExperienceEntry {
+  id: string;
+  data: ExperienceData;
 }
 
-export function createContentQueries(entries: ContentEntries, mode: ContentMode) {
-  const publishedPosts = entries.posts
+export interface ContentEntries {
+  posts: PostEntry[];
+  experience: ExperienceEntry[];
+}
+
+export function createContentQueries(
+  { posts, experience }: ContentEntries,
+  mode: ContentMode,
+) {
+  const publishedPosts = posts
     .filter((entry) => mode === 'development' || !entry.data.draft)
     .toSorted(
       (a, b) => b.data.publishDate.getTime() - a.data.publishDate.getTime(),
@@ -35,7 +47,20 @@ export function createContentQueries(entries: ContentEntries, mode: ContentMode)
     isBlogVisible: publishedPosts.length > 0,
     latestPosts: (count: number) => publishedPosts.slice(0, count),
     readingTime: (post: PostEntry) => readingTime(post),
+    experienceTimeline: experience.toSorted(byTimelinePosition),
   };
+}
+
+/** Ongoing roles come first, then the rest by start date descending. */
+function byTimelinePosition(a: ExperienceEntry, b: ExperienceEntry) {
+  const aOngoing = !a.data.endDate;
+  const bOngoing = !b.data.endDate;
+
+  if (aOngoing !== bOngoing) {
+    return aOngoing ? -1 : 1;
+  }
+
+  return b.data.startDate.getTime() - a.data.startDate.getTime();
 }
 
 const WORDS_PER_MINUTE = 200;

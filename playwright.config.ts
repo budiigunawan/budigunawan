@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const PORT = 4321;
+// Deliberately not the preview port: a developer's `npm run preview` must never
+// be mistaken for the Wrangler server these tests run against.
+const PORT = 4322;
 
 export default defineConfig({
   testDir: './tests/e2e',
@@ -14,14 +16,17 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: `npm run build && npm run preview -- --port ${PORT}`,
+    // Wrangler is the production server, so the Cloudflare asset rules in
+    // `public/` (such as `_headers`) apply to the built assets under test.
+    command: `npm run build && npx wrangler dev --port ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
     env: {
       // A stand-in token so the tests exercise the analytics wiring. The
-      // hostname gate keeps the beacon off the preview server.
+      // hostname gate keeps the beacon off the local server.
       PUBLIC_CF_ANALYTICS_TOKEN: 'e2e-analytics-token',
+      WRANGLER_SEND_METRICS: 'false',
     },
   },
 });
