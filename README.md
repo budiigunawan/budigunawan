@@ -51,7 +51,7 @@ src/
 │   ├── ExternalLink.astro    # Marks links that leave the site
 │   └── ThemeToggle.tsx       # Theme island
 ├── content.config.ts         # Content collection schemas
-├── content/                  # Content entries: Posts (MDX) and Experience (JSON)
+├── content/                  # Content entries: Posts and Projects (MDX), Experience (JSON)
 ├── data/site.ts              # Site profile: name, role, pitch, social links
 ├── layouts/BaseLayout.astro  # Landmarks, navigation, footer, inline theme script
 ├── lib/
@@ -102,6 +102,13 @@ palette. Change a palette value and every page follows.
   file, validated against the collection schema. A role with no `endDate` is
   ongoing; the About timeline lists ongoing roles first, then the rest by start
   date descending. Invalid dates or missing required fields fail the build.
+- Projects are MDX files in `src/content/projects/`, one Project per file, with
+  `title`, `summary`, `stack`, `date`, optional `repositoryUrl` and `liveUrl`,
+  and a `featured` flag that defaults to false. A Project has a Case Study
+  exactly when it has body content. The Projects page lists Featured Projects
+  first and the rest newest first; a card links to its Case Study, otherwise to
+  the live URL, otherwise to the repository. A Project with neither a Case Study
+  nor an external link fails the build.
 - The CV is a single PDF at `public/cv.pdf`, served at the stable `/cv` URL.
   Replace that one file and the URL picks up the new version on the next deploy.
 
@@ -148,4 +155,4 @@ The Site profile and the pages currently use placeholder values. Before launch,
 replace the profile details in `src/data/site.ts` with Budi's real email, GitHub
 and LinkedIn URLs, swap `public/og-default.png` for the final social image, put
 the real CV in place of `public/cv.pdf`, and replace the placeholder Experience
-entries in `src/content/experience/`.
+and Project entries in `src/content/`.

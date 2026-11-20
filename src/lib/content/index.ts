@@ -5,6 +5,7 @@ import {
   type ContentMode,
   type ExperienceEntry,
   type PostEntry,
+  type ProjectEntry,
 } from './query';
 
 export type {
@@ -13,6 +14,9 @@ export type {
   ExperienceEntry,
   PostData,
   PostEntry,
+  ProjectData,
+  ProjectEntry,
+  ProjectLinkTarget,
 } from './query';
 
 export interface Content extends ReturnType<typeof createContentQueries> {
@@ -28,10 +32,11 @@ export async function getContent(): Promise<Content> {
   const mode: ContentMode = import.meta.env.DEV ? 'development' : 'production';
   const posts: PostEntry[] = await getCollection('posts');
   const experience: ExperienceEntry[] = await getCollection('experience');
+  const projects: ProjectEntry[] = await getCollection('projects');
 
   return {
     mode,
     site: siteProfile,
-    ...createContentQueries({ posts, experience }, mode),
+    ...createContentQueries({ posts, experience, projects }, mode),
   };
 }

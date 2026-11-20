@@ -7,7 +7,7 @@ import {
 
 /** These cases only exercise Posts, so Experience entries stay out of the way. */
 function queries(posts: PostEntry[], mode: ContentMode) {
-  return createContentQueries({ posts, experience: [] }, mode);
+  return createContentQueries({ posts, experience: [], projects: [] }, mode);
 }
 
 function post(
