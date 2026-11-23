@@ -6,7 +6,7 @@
 
 **Status:** ready-for-agent
 
-- [ ] The preview URL renders the shell: navigation, footer with social links, and a placeholder home page. (Verified on the built site via `astro preview`; a live Vercel preview URL awaits the Vercel project.)
+- [x] The preview URL renders the shell: navigation, footer with social links, and a placeholder home page. (Live at https://budigunawan.vercel.app/.)
 - [x] Navigation offers only routes that exist at this point, so no link in the shell 404s.
 - [x] A first visit follows the operating system's light or dark preference; toggling manually persists across reloads.
 - [x] Fonts load from the site's own origin, and no request leaves the site for a font host.
@@ -26,6 +26,6 @@
 - The 404 page reuses the shell, is noindex, and links home.
 - `.github/workflows/ci.yml` runs `pnpm install --frozen-lockfile`, `pnpm check` and `pnpm build` on every push and pull request.
 
-Verification: `pnpm check` reports 0 errors and `pnpm build` succeeds. `astro preview` served `/` with 200 and unknown paths with the styled 404. The live preview URL remains unchecked because no Vercel project is connected yet. Browser checks confirmed the OS preference on first visit, the toggle persisting across reloads, 2px accent focus rings on links and the toggle, no horizontal overflow at 320px, and no resource requests off the site's origin.
+Verification: `pnpm check` reports 0 errors and `pnpm build` succeeds. `astro preview` served `/` with 200 and unknown paths with the styled 404. On the live deployment, `/` returns 200, unknown paths return the styled 404 with `noindex`, the only requested hosts are the site's own, the OS preference applies on first visit, the toggle persists across reloads, and 320px has no horizontal overflow. Browser checks on the build confirmed 2px accent focus rings on links and the toggle, and no resource requests off the site's origin.
 
-Remaining operator steps: connect this repository to a Vercel project (which produces the preview URL) and add a remote so the workflow can run.
+Deployment and CI: https://budigunawan.vercel.app/ serves the site. CI run 45156633974 passed on `main`, with both the type check and build steps succeeding.
