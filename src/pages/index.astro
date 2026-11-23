@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../config/site';
+---
+
+<BaseLayout>
+  <section class="shell py-20 sm:py-28">
+    <div class="max-w-[46rem]">
+      <p class="eyebrow">{site.fullName}</p>
+
+      <h1 class="mt-5 font-display text-[clamp(2.25rem,7vw,4rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        {site.tagline}
+      </h1>
+
+      <p class="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
+        I build web applications, mostly on the frontend, and I'm working toward the whole stack. This is where my
+        work and writing will live.
+      </p>
+
+      <div class="mt-10 flex flex-wrap items-center gap-3">
+        <a class="button button-primary" href={site.socials.email.href}>Email me</a>
+        <a
+          class="button"
+          href={site.socials.github.href}
+          rel="me noopener"
+          target="_blank"
+        >
+          GitHub<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+        <a
+          class="button"
+          href={site.socials.linkedin.href}
+          rel="me noopener"
+          target="_blank"
+        >
+          LinkedIn<span class="sr-only"> (opens in a new tab)</span>
+        </a>
+      </div>
+
+      <p class="mt-16 border-t border-rule pt-6 text-sm leading-relaxed text-ink-muted">
+        This site is being rebuilt. The career timeline, projects and writing arrive as each one is finished.
+      </p>
+    </div>
+  </section>
+</BaseLayout>

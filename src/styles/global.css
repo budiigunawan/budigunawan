@@ -1,0 +1,108 @@
+@import "tailwindcss";
+@import "@fontsource-variable/fraunces/index.css";
+@import "@fontsource-variable/inter/index.css";
+@import "@fontsource-variable/jetbrains-mono/index.css";
+
+@theme {
+  --font-display: "Fraunces Variable", ui-serif, Georgia, "Times New Roman", serif;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-strong: var(--accent-strong);
+}
+
+/*
+ * `color-scheme: light dark` makes the tokens follow the operating system.
+ * The theme toggle pins it to `light` or `dark` via `data-theme` on <html>,
+ * which the inline script in ThemeInit writes before first paint.
+ */
+:root {
+  color-scheme: light dark;
+
+  --canvas: light-dark(#fcfaf7, #141210);
+  --surface: light-dark(#f5f1ea, #1d1a16);
+  --ink: light-dark(#1f1b16, #f3eee7);
+  --ink-muted: light-dark(#5b5348, #b8afa2);
+  --rule: light-dark(#e3dcd2, #34302a);
+  --accent: light-dark(#9e3b1f, #f0a882);
+  --accent-strong: light-dark(#7a2c15, #f7c3a6);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--canvas);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-5xl px-5 sm:px-6;
+  }
+
+  .nav-link {
+    @apply inline-flex min-h-11 items-center rounded-sm px-2 text-sm font-medium text-ink-muted transition-colors hover:text-ink;
+  }
+
+  .nav-link[aria-current="page"] {
+    @apply text-ink;
+  }
+
+  .link {
+    @apply text-accent underline decoration-1 underline-offset-4 transition-colors hover:text-accent-strong;
+  }
+
+  .button {
+    @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-full border border-rule bg-surface px-5 text-sm font-medium text-ink transition-colors hover:border-accent hover:text-accent;
+  }
+
+  .button-primary {
+    @apply border-accent bg-accent text-canvas hover:border-accent-strong hover:bg-accent-strong hover:text-canvas;
+  }
+
+  .eyebrow {
+    @apply text-sm font-medium tracking-[0.14em] text-ink-muted uppercase;
+  }
+}

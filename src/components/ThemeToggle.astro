@@ -1,0 +1,63 @@
+---
+// The button is a no-JS no-op: the CSS already follows the system preference.
+// With JS, it flips the resolved theme and stores the choice for later visits.
+---
+
+<button
+  type="button"
+  data-theme-toggle
+  aria-label="Toggle colour theme"
+  class="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-rule text-ink-muted transition-colors hover:border-accent hover:text-accent"
+>
+  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.6">
+    <circle cx="12" cy="12" r="9"></circle>
+    <path d="M12 3a9 9 0 0 0 0 18Z" fill="currentColor" stroke="none"></path>
+  </svg>
+</button>
+
+<script>
+  type Theme = 'light' | 'dark';
+
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>('[data-theme-toggle]');
+  const systemDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+  function storedTheme(): Theme | null {
+    try {
+      const value = localStorage.getItem('theme');
+      return value === 'light' || value === 'dark' ? value : null;
+    } catch {
+      return null;
+    }
+  }
+
+  function activeTheme(): Theme {
+    const pinned = root.dataset.theme;
+    if (pinned === 'light' || pinned === 'dark') return pinned;
+    return systemDark.matches ? 'dark' : 'light';
+  }
+
+  function syncLabel(): void {
+    if (!button) return;
+    const next = activeTheme() === 'dark' ? 'light' : 'dark';
+    button.setAttribute('aria-label', `Switch to ${next} theme`);
+  }
+
+  button?.addEventListener('click', () => {
+    const next = activeTheme() === 'dark' ? 'light' : 'dark';
+    root.dataset.theme = next;
+    try {
+      localStorage.setItem('theme', next);
+    } catch {
+      // The choice stays for this page only when storage is unavailable.
+    }
+    syncLabel();
+  });
+
+  // Until the visitor overrides it, keep the label honest as the OS changes.
+  systemDark.addEventListener('change', () => {
+    if (storedTheme() === null) syncLabel();
+  });
+
+  syncLabel();
+</script>

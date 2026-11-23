@@ -1,0 +1,15 @@
+---
+// Runs before first paint so a stored preference never flashes the wrong theme.
+// With no stored preference, the CSS follows the operating system instead.
+---
+
+<script is:inline>
+  try {
+    const theme = localStorage.getItem('theme');
+    if (theme === 'light' || theme === 'dark') {
+      document.documentElement.dataset.theme = theme;
+    }
+  } catch {
+    // Storage can be unavailable; the system preference still applies.
+  }
+</script>
