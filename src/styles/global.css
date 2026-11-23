@@ -105,4 +105,24 @@
   .eyebrow {
     @apply text-sm font-medium tracking-[0.14em] text-ink-muted uppercase;
   }
+
+  .entry-body {
+    @apply mt-4 text-ink-muted;
+  }
+
+  .entry-body > :first-child {
+    @apply mt-0;
+  }
+
+  .entry-body p {
+    @apply mt-4 text-pretty;
+  }
+
+  .entry-body ul {
+    @apply mt-4 list-disc space-y-2 pl-5;
+  }
+
+  .entry-body strong {
+    @apply font-semibold text-ink;
+  }
 }
