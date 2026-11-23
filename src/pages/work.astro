@@ -3,11 +3,16 @@ import { render } from 'astro:content';
 
 import WorkEntryDates from '../components/WorkEntryDates.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getWorkEntries } from '../lib/content';
+import { getProjectsByWorkEntry, getWorkEntries } from '../lib/content';
 
 const entries = await getWorkEntries();
+const projectsByWorkEntry = await getProjectsByWorkEntry();
 const items = await Promise.all(
-  entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+  entries.map(async (entry) => ({
+    entry,
+    projects: projectsByWorkEntry.get(entry.id) ?? [],
+    Content: (await render(entry)).Content,
+  })),
 );
 ---
 
@@ -30,9 +35,9 @@ const items = await Promise.all(
 
     <ol class="mt-12 max-w-[52rem] border-t border-rule">
       {
-        items.map(({ entry, Content }) => (
+        items.map(({ entry, projects, Content }) => (
           <li class="border-b border-rule py-10">
-            <article class="grid gap-3 sm:grid-cols-[10.5rem_minmax(0,1fr)] sm:gap-8">
+            <article id={entry.id} class="grid gap-3 sm:grid-cols-[10.5rem_minmax(0,1fr)] sm:gap-8">
               <WorkEntryDates start={entry.data.start} end={entry.data.end} />
 
               <div class="min-w-0">
@@ -42,6 +47,19 @@ const items = await Promise.all(
                 <div class="entry-body">
                   <Content />
                 </div>
+
+                {projects.length > 0 && (
+                  <div class="mt-6">
+                    <h3 class="section-label">Projects</h3>
+                    <ul class="mt-2 flex flex-col gap-1">
+                      {projects.map((project) => (
+                        <li>
+                          <a class="link text-sm" href={`/projects/${project.id}`}>{project.data.title}</a>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </article>
           </li>

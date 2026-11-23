@@ -34,6 +34,7 @@ export const site = {
   nav: [
     { label: 'Home', href: '/' },
     { label: 'Work', href: '/work' },
+    { label: 'Projects', href: '/projects' },
   ] satisfies readonly NavItem[],
   socials: {
     github: { id: 'github', label: 'GitHub', href: 'https://github.com/budiigunawan', external: true },

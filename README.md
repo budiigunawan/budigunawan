@@ -23,8 +23,11 @@ The public site of Budi Indra Gunawan: Work Entries, Projects and Posts.
 - `src/config/site.ts` — the single source of truth for identity, the canonical URL, navigation and social links. The Astro config imports its URL, so pages and metadata cannot disagree about the domain.
 - `src/content.config.ts` — the content schema: the single authority on what each content collection is.
 - `src/content/work/` — one markdown file per Work Entry.
-- `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first.
-- `src/lib/dates.ts` — month-and-year formatting and the matching `<time datetime>` value, in UTC so a date never shifts month.
+- `src/content/projects/` — one markdown file per Project.
+- `public/images/projects/` — cover images referenced by Project frontmatter, served from the site's own origin.
+- `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first, every published Project newest first, and Projects grouped by the Work Entry that produced them.
+- `src/lib/dates.ts` — month-and-year and full-date formatting with the matching `<time datetime>` values, in UTC so a date never shifts.
+- `src/pages/projects/` — the Projects index and the detail route.
 - `src/layouts/BaseLayout.astro` — document metadata, skip link, header, footer, and the slot for page content.
 - `src/styles/global.css` — the two themes' colour tokens, the type pairing, focus states, reduced-motion handling, and the prose rules for markdown bodies.
 - `src/components/ThemeInit.astro` — restores a stored theme before first paint.
@@ -48,7 +51,9 @@ Navigation is derived from `site.nav`. Add an entry only when the route it point
 
 Work Entries are markdown files in `src/content/work/`. Frontmatter declares `company`, `role`, `start`, and optionally `end`, with dates written as `YYYY-MM`; an absent `end` means the role is current and renders as such, never with a fabricated end date. The body records responsibilities, not Projects.
 
-Files are loaded through a glob, so a new markdown file appears on `/work` with no code change. Frontmatter is validated against `src/content.config.ts` at build time, and a missing or malformed required field fails the build naming that field.
+Projects are markdown files in `src/content/projects/`. Frontmatter declares `title`, `summary`, `kind` (`personal` or `professional`), `date` as `YYYY-MM-DD`, `stack`, `tags`, `built` and `impact`; it may also declare `workEntry`, `demoUrl`, `repoUrl`, `cover`, `featured` and `draft`. A Project's slug comes from its file name and is part of the public contract, so `janjiraga.md` serves `/projects/janjiraga`. `kind`, `stack` and `tags` are separate axes: language and framework names belong in `stack`, subject matter in `tags`. A `professional` Project may name the Work Entry that produced it by file name, such as `workEntry: paragon-corp`; the Work Entry then links to the Project. A cover image needs `src`, `alt`, `width` and `height`; the file lives under `public/images/projects/`, and the dimensions reserve space so the page does not shift as the image loads. `draft: true` hides a Project from production builds, the index and its detail route while keeping it visible in development.
+
+Files are loaded through a glob, so a new markdown file appears on `/work` or `/projects` with no code change. Frontmatter is validated against `src/content.config.ts` at build time, and a missing or malformed required field fails the build naming that field.
 
 ## CI and deployment
 

@@ -3,6 +3,7 @@ import { site } from '../config/site';
 import ThemeToggle from './ThemeToggle.astro';
 
 const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const isCurrent = (href: string) => pathname === href || (href !== '/' && pathname.startsWith(`${href}/`));
 ---
 
 <header class="border-b border-rule">
@@ -17,7 +18,7 @@ const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
           {
             site.nav.map((item) => (
               <li>
-                <a class="nav-link" href={item.href} aria-current={pathname === item.href ? 'page' : undefined}>
+                <a class="nav-link" href={item.href} aria-current={isCurrent(item.href) ? 'page' : undefined}>
                   {item.label}
                 </a>
               </li>

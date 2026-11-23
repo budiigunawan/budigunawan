@@ -1,0 +1,30 @@
+---
+import ProjectCard from '../../components/ProjectCard.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getProjects } from '../../lib/content';
+
+const projects = await getProjects();
+---
+
+<BaseLayout
+  title="Projects"
+  description="Software Budi Indra Gunawan has shipped, personal and professional, newest first, with the Stack behind each one."
+>
+  <section class="shell py-16 sm:py-24">
+    <div class="max-w-[46rem]">
+      <p class="eyebrow">Evidence</p>
+
+      <h1 class="mt-5 font-display text-[clamp(2.25rem,7vw,4rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        Projects
+      </h1>
+
+      <p class="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
+        Software I've shipped, personal and professional, newest first. Each one names the Stack it was built with.
+      </p>
+    </div>
+
+    <div class="mt-12 max-w-[56rem] border-t border-rule">
+      {projects.map((project) => <ProjectCard project={project} />)}
+    </div>
+  </section>
+</BaseLayout>

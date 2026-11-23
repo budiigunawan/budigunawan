@@ -1,0 +1,19 @@
+---
+import type { Project } from '../lib/content';
+import { dayDatetime, formatFullDate } from '../lib/dates';
+import ProjectKindBadge from './ProjectKindBadge.astro';
+
+interface Props {
+  project: Project;
+}
+
+const { project } = Astro.props;
+const { kind, date } = project.data;
+---
+
+<div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+  <ProjectKindBadge kind={kind} />
+  <time class="font-mono text-xs tracking-wide text-ink-muted" datetime={dayDatetime(date)}>
+    {formatFullDate(date)}
+  </time>
+</div>
