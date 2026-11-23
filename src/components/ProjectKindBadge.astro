@@ -1,0 +1,16 @@
+---
+import type { Project } from '../lib/content';
+
+interface Props {
+  kind: Project['data']['kind'];
+}
+
+const { kind } = Astro.props;
+const label = kind === 'professional' ? 'Professional project' : 'Personal project';
+---
+
+<span
+  class="inline-flex items-center rounded-full border border-rule px-2.5 py-1 text-[0.6875rem] font-medium tracking-[0.08em] text-ink-muted uppercase"
+>
+  {label}
+</span>

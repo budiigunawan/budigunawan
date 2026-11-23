@@ -106,6 +106,10 @@
     @apply text-sm font-medium tracking-[0.14em] text-ink-muted uppercase;
   }
 
+  .section-label {
+    @apply text-[0.6875rem] font-medium tracking-[0.08em] text-ink-muted uppercase;
+  }
+
   .entry-body {
     @apply mt-4 text-ink-muted;
   }
@@ -124,5 +128,21 @@
 
   .entry-body strong {
     @apply font-semibold text-ink;
+  }
+
+  .entry-body h2 {
+    @apply mt-10 font-display text-xl leading-tight font-semibold tracking-tight text-ink;
+  }
+
+  .entry-body h3 {
+    @apply mt-8 text-base font-semibold tracking-tight text-ink;
+  }
+
+  .entry-body a {
+    @apply text-accent underline decoration-1 underline-offset-4 transition-colors hover:text-accent-strong;
+  }
+
+  .entry-body img {
+    @apply mt-6 w-full rounded-lg border border-rule;
   }
 }
