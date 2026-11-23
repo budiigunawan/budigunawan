@@ -87,7 +87,30 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 45. As a maintainer, I want the reason this site is static except for one route recorded, so that I do not "fix" it by making everything server-rendered.
 46. As a maintainer, I want the reason a Project and a Work Entry are separate concepts recorded, so that I do not reintroduce the duplication.
 
+### Cross-cutting quality
+
+47. As a reader on a phone, I want every page to be usable at small widths without horizontal scrolling, so that I can read on the move.
+48. As a reader who has asked my operating system to reduce motion, I want transitions suppressed, so that the site does not make me ill.
+49. As a reader, I want code samples highlighted and copyable, so that I can lift a snippet without fighting the formatting.
+50. As a reader, I want a Post to print cleanly without navigation or theme chrome, so that I can keep a copy on paper.
+51. As a reader sharing a Post, I want a link preview carrying its title and summary, so that the link does not look like an untitled URL.
+52. As a reader with JavaScript disabled, I want the Contact form to submit anyway, so that the site's one action does not depend on my browser.
+53. As the operator, I want preview deployments excluded from search engines, so that unfinished work cannot outrank the real site.
+54. As the operator, I want a failing mail provider to leave a log entry naming the stored Contact Message, so that I can recover a notification I never received.
+55. As the author, I want a cover image to be optional and its alt text required, so that a Post is never published with an unlabelled image.
+
 ## Implementation Decisions
+
+### Modules
+
+- A **site configuration** module owns identity, navigation, social links, and the canonical base URL, so no page hardcodes them and the sitemap cannot disagree with the pages.
+- A **content schema** module declares the four collections and is the single authority on their shape.
+- A **content query** module exposes every read the pages need: Work Entries newest first, Projects filtered by kind, featured Projects, published Posts, Posts by tag, and a single Project or Post by slug. Production reads never return drafts.
+- A **contact endpoint** module implements the HTTP contract and depends only on two ports; no other module imports the database client or the mail provider.
+- A **contact store** port persists a Contact Message and counts recent messages for a client key. Its Prisma implementation is replaced by a fake in tests.
+- A **notifier** port sends the new-message email. Its mail-provider implementation is replaced by a fake in tests.
+- A **layout and shell** layer owns head metadata, theme handling, navigation, and footer, so every page inherits the same SEO and accessibility behaviour.
+- A **feed and sitemap** module builds RSS and sitemap output from the same content queries the pages use, so the two cannot list different content.
 
 ### Stack and shape
 
@@ -105,6 +128,11 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 - `kind`, `stack`, and `tags` are three distinct axes. Language and framework names belong in `stack`; subject matter belongs in `tags`. The previous string "A Personal project" disappears from tags entirely.
 - Magpie becomes exactly one professional Project referencing Paragon Corp. It is removed as a Work Entry bullet, and the Work Entry keeps only employment facts and responsibilities.
 - Markdown only. MDX is out of scope in v1.
+- Work Entries sort by start date descending; an entry with no end date is current and sorts above older completed roles only when its start date is later. Projects and Posts sort by date descending.
+- Featured Projects and Posts are selected by an explicit flag. If fewer are flagged than the home page needs, the newest unflagged items fill the remainder, so the home page never renders an empty slot.
+- A slug is derived from the content file name and is part of the public contract: `janjiraga` and `bambino` keep their current slugs, so links already in circulation keep resolving.
+- Drafts are excluded from production builds, index pages, the feed, and the sitemap. They remain visible in local development.
+- Projects and Posts may carry an optional cover image, and any cover image requires alt text.
 
 ### Routes
 
@@ -113,6 +141,8 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 - Project detail uses fixed narrative sections — summary, Stack, what was built, impact, links — followed by the free-form body. Projects without external links render no link affordances.
 - `/contact` replaces a route that currently 404s.
 - Navigation is Home, Work, Projects, Blog, Resume (external file), Contact; socials live in the footer.
+- An unknown Project or Post slug renders the styled 404 page, not a bare framework error.
+- The Contact form works without JavaScript: it submits as an ordinary form post and the endpoint answers with a redirect back to the Contact page in a confirmation state. With JavaScript, the same endpoint is called directly and the confirmation renders in place. One contract, two transports.
 
 ### Contact endpoint
 
@@ -123,6 +153,8 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 - On success the Contact Message is persisted first, then a notification is sent through the mail provider. A mail failure is logged and does not fail the request; the response is still a success because the message is stored.
 - Responses are JSON with a stable shape, and the endpoint never leaks internal error detail to the client.
 - The handler reaches the database and the mail provider through two narrow ports that are injected, so tests substitute fakes. Neither is referenced directly from the route.
+- The endpoint accepts both JSON and form-encoded bodies. JSON callers receive JSON; form callers receive a redirect to the Contact page with a success or error indicator, because the no-JavaScript path must be a real navigation.
+- A mail failure is logged with enough context to identify which stored Contact Message went unnotified, without logging the message body.
 
 ### Admin (deferred)
 
@@ -134,6 +166,12 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 - Light and dark themes, following the system preference with a manual override that persists.
 - Motion limited to hover and enter transitions. No scroll-jacking.
 - One accent colour, chosen during implementation.
+- Fonts are self-hosted, not fetched from a third-party font service.
+- Target WCAG 2.1 AA: visible focus states, contrast that holds in both themes, labelled controls, and no information carried by colour alone.
+- Mobile-first layout: a single content column capped at a comfortable reading measure, with no horizontal scrolling at 320px.
+- Motion is suppressed when the operating system reports a reduced-motion preference; the transitions become instant rather than merely faster.
+- Code blocks are syntax highlighted and offer a copy control.
+- Posts print without navigation, theme chrome, or the footer.
 
 ### Discovery and operations
 
@@ -141,6 +179,10 @@ The result is a site a recruiter can act on in under a minute (who, what shipped
 - Canonical URLs, a default Open Graph image, a correct sitemap naming `budigunawan.com`, robots directives, and an RSS feed listing published Posts only.
 - Analytics and sitemap must not advertise the preview or demo domain under any configuration.
 - DNS stays at Cloudflare; the new Vercel project claims both apex and `www`.
+- Preview deployments carry a noindex directive, so unfinished builds cannot be indexed or outrank the production domain.
+- Responses carry a conservative set of security headers, and the Contact endpoint rejects cross-origin submissions.
+- Contact Message storage is a migrated database schema. Preview deployments use a database separate from production, so a test submission can never land in the real inbox.
+- The feed carries Post summaries and links rather than full text, so subscribers are drawn to the site and the feed cannot drift from the rendered Post.
 
 ### Content and copy
 
@@ -185,5 +227,5 @@ A good test here asserts externally observable behaviour: a request produces a s
 - **Consequence for migration:** because the live routes already match the new routes, no redirect table is required except that `/contact` starts working. The old project moves to a subdomain rather than being deleted.
 - **Open input, not a blocker:** the topic of the first Post is Budi's to choose. Launch does not require more than one.
 - **Human prerequisites before launch:** create the Neon project, verify `budigunawan.com` with the mail provider (a DNS record at Cloudflare), create the new Vercel project and move the domain, and set the environment secrets.
-- **Acceptance:** v1 is done when `budigunawan.com` serves the rebuilt site over HTTPS with the old project available at its subdomain, every listed route returns 200, a submitted Contact Message arrives by email and is retrievable from the database, invalid and bot submissions are rejected without an email, the sitemap names the real domain, the RSS feed validates, and `astro check`, the build, and the Contact endpoint and smoke tests all pass in CI.
+- **Acceptance:** v1 is done when `budigunawan.com` serves the rebuilt site over HTTPS with the old project available at its subdomain, every listed route returns 200, a submitted Contact Message arrives by email and is retrievable from the database, the same form succeeds with JavaScript disabled, invalid and bot submissions are rejected without an email, the sitemap names the real domain, the RSS feed validates, and `astro check`, the build, and the Contact endpoint and smoke tests all pass in CI.
 - **Deferred decisions** that will need their own tickets later: the exact accent colour and type pairing, and the admin view's session lifetime.
