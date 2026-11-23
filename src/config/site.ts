@@ -33,6 +33,7 @@ export const site = {
   // shell 404s.
   nav: [
     { label: 'Home', href: '/' },
+    { label: 'Work', href: '/work' },
   ] satisfies readonly NavItem[],
   socials: {
     github: { id: 'github', label: 'GitHub', href: 'https://github.com/budiigunawan', external: true },

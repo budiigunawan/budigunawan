@@ -21,8 +21,12 @@ The public site of Budi Indra Gunawan: Work Entries, Projects and Posts.
 ## Structure
 
 - `src/config/site.ts` — the single source of truth for identity, the canonical URL, navigation and social links. The Astro config imports its URL, so pages and metadata cannot disagree about the domain.
+- `src/content.config.ts` — the content schema: the single authority on what each content collection is.
+- `src/content/work/` — one markdown file per Work Entry.
+- `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first.
+- `src/lib/dates.ts` — month-and-year formatting and the matching `<time datetime>` value, in UTC so a date never shifts month.
 - `src/layouts/BaseLayout.astro` — document metadata, skip link, header, footer, and the slot for page content.
-- `src/styles/global.css` — the two themes' colour tokens, the type pairing, focus states, and reduced-motion handling.
+- `src/styles/global.css` — the two themes' colour tokens, the type pairing, focus states, reduced-motion handling, and the prose rules for markdown bodies.
 - `src/components/ThemeInit.astro` — restores a stored theme before first paint.
 - `src/components/ThemeToggle.astro` — the manual override.
 
@@ -39,6 +43,12 @@ Fraunces (display), Inter (body), and JetBrains Mono (code) are installed from n
 ## Navigation
 
 Navigation is derived from `site.nav`. Add an entry only when the route it points at exists, so the shell never links to a 404.
+
+## Content
+
+Work Entries are markdown files in `src/content/work/`. Frontmatter declares `company`, `role`, `start`, and optionally `end`, with dates written as `YYYY-MM`; an absent `end` means the role is current and renders as such, never with a fabricated end date. The body records responsibilities, not Projects.
+
+Files are loaded through a glob, so a new markdown file appears on `/work` with no code change. Frontmatter is validated against `src/content.config.ts` at build time, and a missing or malformed required field fails the build naming that field.
 
 ## CI and deployment
 

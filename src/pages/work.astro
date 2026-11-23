@@ -1,0 +1,52 @@
+---
+import { render } from 'astro:content';
+
+import WorkEntryDates from '../components/WorkEntryDates.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getWorkEntries } from '../lib/content';
+
+const entries = await getWorkEntries();
+const items = await Promise.all(
+  entries.map(async (entry) => ({ entry, Content: (await render(entry)).Content })),
+);
+---
+
+<BaseLayout
+  title="Work"
+  description="The career timeline of Budi Indra Gunawan: roles, companies, dates and responsibilities, newest first."
+>
+  <section class="shell py-16 sm:py-24">
+    <div class="max-w-[46rem]">
+      <p class="eyebrow">Career</p>
+
+      <h1 class="mt-5 font-display text-[clamp(2.25rem,7vw,4rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        Work
+      </h1>
+
+      <p class="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
+        Where I've worked, newest first. A role without an end date is current.
+      </p>
+    </div>
+
+    <ol class="mt-12 max-w-[52rem] border-t border-rule">
+      {
+        items.map(({ entry, Content }) => (
+          <li class="border-b border-rule py-10">
+            <article class="grid gap-3 sm:grid-cols-[10.5rem_minmax(0,1fr)] sm:gap-8">
+              <WorkEntryDates start={entry.data.start} end={entry.data.end} />
+
+              <div class="min-w-0">
+                <h2 class="font-display text-2xl leading-tight font-semibold tracking-tight text-ink">{entry.data.role}</h2>
+                <p class="mt-1.5 text-base font-medium text-ink">{entry.data.company}</p>
+
+                <div class="entry-body">
+                  <Content />
+                </div>
+              </div>
+            </article>
+          </li>
+        ))
+      }
+    </ol>
+  </section>
+</BaseLayout>
