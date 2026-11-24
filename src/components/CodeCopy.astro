@@ -1,0 +1,35 @@
+---
+// The copy control's markup comes from the markdown pipeline; this script is
+// the only thing that makes it real. Without JavaScript the button stays
+// hidden and the code block is simply readable.
+---
+
+<script>
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      await navigator.clipboard.writeText(text);
+      return true;
+    } catch {
+      // The Clipboard API needs a secure context and permission. When it is
+      // unavailable the reader still has the code in front of them to select.
+      return false;
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-code-copy]')) {
+    const code = button.closest('.code-block')?.querySelector('pre');
+    if (!code) continue;
+
+    let reset: number | undefined;
+
+    button.hidden = false;
+    button.addEventListener('click', async () => {
+      const copied = await copyText(code.innerText);
+      button.textContent = copied ? 'Copied' : 'Copy failed';
+      window.clearTimeout(reset);
+      reset = window.setTimeout(() => {
+        button.textContent = 'Copy';
+      }, 2000);
+    });
+  }
+</script>

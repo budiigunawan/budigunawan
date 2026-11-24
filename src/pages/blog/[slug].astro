@@ -1,0 +1,67 @@
+---
+import { render } from 'astro:content';
+
+import CodeCopy from '../../components/CodeCopy.astro';
+import PostTags from '../../components/PostTags.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPosts, type Post } from '../../lib/content';
+import { dayDatetime, formatFullDate } from '../../lib/dates';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { title, summary, date, tags, cover } = post.data;
+const { Content } = await render(post);
+---
+
+<BaseLayout title={title} description={summary}>
+  <article class="shell py-16 sm:py-24 print:py-0">
+    <div class="max-w-[42rem]">
+      <a class="link text-sm print:hidden" href="/blog">
+        <span aria-hidden="true">←</span> All posts
+      </a>
+
+      <div class="mt-6 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+        <time class="section-label" datetime={dayDatetime(date)}>{formatFullDate(date)}</time>
+        <PostTags tags={tags} />
+      </div>
+
+      <h1 class="mt-4 font-display text-[clamp(2.25rem,7vw,3.5rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        {title}
+      </h1>
+
+      <p class="mt-5 text-lg leading-relaxed text-ink-muted text-pretty">{summary}</p>
+
+      {
+        cover && (
+          <img
+            src={cover.src}
+            alt={cover.alt}
+            width={cover.width}
+            height={cover.height}
+            decoding="async"
+            class="mt-8 h-auto w-full rounded-lg border border-rule"
+          />
+        )
+      }
+
+      <div class="post-body">
+        <Content />
+      </div>
+
+      <nav class="mt-14 border-t border-rule pt-6 print:hidden" aria-label="Post navigation">
+        <a class="link text-sm" href="/blog"><span aria-hidden="true">←</span> All posts</a>
+      </nav>
+    </div>
+  </article>
+
+  <CodeCopy />
+</BaseLayout>
