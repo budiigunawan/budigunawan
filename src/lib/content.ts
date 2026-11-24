@@ -4,6 +4,29 @@ export type WorkEntry = CollectionEntry<'work'>;
 export type Project = CollectionEntry<'projects'>;
 export type Post = CollectionEntry<'posts'>;
 
+/** Newest first, with the title breaking date ties. */
+function newestFirst<T extends { data: { date: Date; title: string } }>(a: T, b: T): number {
+  return b.data.date.getTime() - a.data.date.getTime() || a.data.title.localeCompare(b.data.title);
+}
+
+/** The home page shows three Projects and three Posts. */
+const HOME_FEATURED_COUNT = 3;
+
+/**
+ * Up to `limit` entries, flagged ones first and the newest unflagged filling
+ * the remainder, displayed newest first. Fewer entries than the limit return
+ * fewer entries rather than a placeholder.
+ */
+function selectFeatured<T extends { data: { featured: boolean; date: Date; title: string } }>(
+  entries: T[],
+  limit: number,
+): T[] {
+  const flagged = entries.filter((entry) => entry.data.featured);
+  const unflagged = entries.filter((entry) => !entry.data.featured);
+
+  return [...flagged, ...unflagged].slice(0, limit).sort(newestFirst);
+}
+
 /**
  * Every Work Entry, newest start date first, with the company name breaking
  * ties. A role with no end date is current; sorting by start date alone keeps
@@ -34,9 +57,15 @@ export async function getProjects(): Promise<Project[]> {
     }
   }
 
-  return published.sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime() || a.data.title.localeCompare(b.data.title),
-  );
+  return published.sort(newestFirst);
+}
+
+/**
+ * Projects for the home page: flagged Projects first, then the newest unflagged
+ * ones, up to three in total.
+ */
+export async function getFeaturedProjects(): Promise<Project[]> {
+  return selectFeatured(await getProjects(), HOME_FEATURED_COUNT);
 }
 
 /** The Work Entry that produced a Project, when it names one. */
@@ -70,9 +99,15 @@ export async function getPosts(): Promise<Post[]> {
   const posts = await getCollection('posts');
   const published = posts.filter((post) => !import.meta.env.PROD || !post.data.draft);
 
-  return published.sort(
-    (a, b) => b.data.date.getTime() - a.data.date.getTime() || a.data.title.localeCompare(b.data.title),
-  );
+  return published.sort(newestFirst);
+}
+
+/**
+ * Posts for the home page: flagged Posts first, then the newest unflagged ones,
+ * up to three in total.
+ */
+export async function getFeaturedPosts(): Promise<Post[]> {
+  return selectFeatured(await getPosts(), HOME_FEATURED_COUNT);
 }
 
 /** Published Posts carrying a tag, matched without regard to case, newest first. */

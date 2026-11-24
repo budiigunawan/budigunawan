@@ -23,12 +23,12 @@ const posts = await getPosts();
       </p>
     </div>
 
-    <div class="mt-12 max-w-[52rem]">
+    <div class="mt-12 max-w-[52rem] border-t border-rule">
       {
         posts.length > 0 ? (
           <PostList posts={posts} />
         ) : (
-          <p class="border-t border-rule pt-8 text-ink-muted">Nothing is published yet.</p>
+          <p class="pt-8 text-ink-muted">Nothing is published yet.</p>
         )
       }
     </div>
