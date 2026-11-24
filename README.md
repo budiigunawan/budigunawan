@@ -4,19 +4,31 @@ The public site of Budi Indra Gunawan: Work Entries, Projects and Posts.
 
 ## Stack
 
-- [Astro 5](https://astro.build) with `output: 'static'`. The Vercel adapter is installed so the future Contact endpoint can opt out of prerendering, but every page today is prerendered.
+- [Astro 5](https://astro.build) with `output: 'static'`. Every page is prerendered; only `POST /api/contact` opts out through the Vercel adapter.
 - TypeScript, strict.
 - Tailwind CSS 4 via the Vite plugin.
+- Prisma with Postgres (Neon in production) for Contact Message storage.
+- Resend for the new-message notification email.
+- Vitest for the Contact endpoint's HTTP tests.
 - pnpm, pinned through `packageManager` in `package.json`.
 
 ## Commands
 
-| Command        | What it does                                  |
-| -------------- | --------------------------------------------- |
-| `pnpm dev`     | Start the dev server at `localhost:4321`      |
-| `pnpm check`   | Type check `.astro` and TypeScript files       |
-| `pnpm build`   | Build the production site into `dist/`        |
-| `pnpm preview` | Serve the built site locally                  |
+| Command                        | What it does                                        |
+| ------------------------------ | --------------------------------------------------- |
+| `pnpm dev`                     | Start the dev server at `localhost:4321`            |
+| `pnpm check`                   | Type check `.astro` and TypeScript files             |
+| `pnpm exec vitest run`        | Run the Contact endpoint tests                       |
+| `pnpm build`                   | Build the production site into `dist/`               |
+| `pnpm preview`                 | Serve the built site locally                         |
+| `pnpm exec prisma generate`    | Generate the Prisma client after a fresh install    |
+| `pnpm exec prisma migrate deploy` | Apply pending migrations to the configured database |
+
+Prisma's client is generated code and is not committed, and pnpm blocks
+dependency lifecycle scripts, so install with `pnpm install --ignore-scripts`
+and then run `pnpm exec prisma generate` once before `pnpm check`,
+`pnpm exec vitest run` or a build. CI and Vercel do the same: the install runs
+no dependency scripts, and the generation step is explicit.
 
 ## Structure
 
@@ -31,6 +43,14 @@ The public site of Budi Indra Gunawan: Work Entries, Projects and Posts.
 - `public/images/posts/` — cover images referenced by Post frontmatter, served from the site's own origin.
 - `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first, every published Project newest first, every published Post newest first, the featured Projects and Posts the home page shows, Posts carrying a tag, Projects grouped by the Work Entry that produced them, and a Legal entry by slug.
 - `src/lib/dates.ts` — month-and-year and full-date formatting with the matching `<time datetime>` values, in UTC so a date never shifts.
+- `src/lib/contact/handler.ts` — the Contact endpoint's HTTP contract, depending only on the two injected ports.
+- `src/lib/contact/ports.ts` — the storage and notification ports; the handler knows nothing else.
+- `src/lib/contact/prisma-store.ts` — the `ContactStore` implementation over Prisma.
+- `src/lib/contact/resend-notifier.ts` — the `ContactNotifier` implementation over Resend's HTTP API.
+- `src/lib/contact/config.ts` — environment resolution, including the preview/production database split.
+- `src/pages/api/contact.ts` — the one route that opts out of prerendering.
+- `prisma/schema.prisma` and `prisma/migrations/` — the Contact Message table and its migration.
+- `docs/contact-endpoint.md` — the endpoint's written contract.
 - `src/pages/index.astro` — the home page: hero, About, featured Projects, latest Posts, and the contact call to action, in that order.
 - `src/pages/projects/` — the Projects index and the detail route.
 - `src/pages/blog/` — the Blog index and the Post detail route.
@@ -71,8 +91,37 @@ Home shows three Projects and three Posts. `featured: true` claims a slot; when 
 
 Code fences are highlighted by Shiki at build time, in both a light and a dark palette chosen by the same signals as the rest of the theme. Each block gets a copy control that is added by script, so it never appears as a dead button without JavaScript, and code that overflows scrolls inside its own block rather than widening the page. Printing a Post drops the header, the footer and the copy controls.
 
+## Contact endpoint
+
+`POST /api/contact` is the site's only runtime surface. It accepts name, email
+and message plus a `website` honeypot, rejects other origins, validates the
+fields, limits each client over a rolling window, stores a Contact Message in
+Postgres, and only then sends a notification email. A failed notification is
+logged with the stored message's id and still answers success, because the
+message is already safe.
+
+The handler is framework-free and takes the two ports it needs, so the tests
+construct a `Request` and substitute fakes: no test opens a database or a
+network connection. JSON callers get JSON; form callers get a `303` back to
+`/contact` with a `sent=1` or `error=<reason>` indicator, which is how the form
+works without JavaScript.
+
+The full contract, response bodies, redirect indicators and environment
+variables are in [`docs/contact-endpoint.md`](docs/contact-endpoint.md).
+`src/lib/contact/config.ts` reads `PREVIEW_DATABASE_URL` on preview deployments
+and `DATABASE_URL` everywhere else, with no fallback between them, and preview
+deployments skip notification, so a test submission cannot reach the real
+inbox. `.env.example` lists every variable.
+
 ## CI and deployment
 
-`.github/workflows/ci.yml` runs `pnpm install --frozen-lockfile`, `pnpm check`, and `pnpm build` on every push and pull request, failing the run on type or build errors. Vercel's Git integration builds a preview deployment for each branch and production from `main`; CI validates the same commit.
+`.github/workflows/ci.yml` runs `pnpm install --frozen-lockfile
+--ignore-scripts`, a Prisma client generation step, `pnpm exec vitest run`,
+`pnpm check`, and `pnpm build` on every push and pull request, failing the run on
+a bad test, type or build error. Vercel's Git integration builds a preview
+deployment for each branch and production from `main`; CI validates the same
+commit, and `vercel.json` uses the same install and generation steps.
 
-Build scripts for `esbuild` and `sharp` are allowlisted in `pnpm-workspace.yaml` because pnpm blocks lifecycle scripts by default.
+`pnpm-workspace.yaml` allowlists build scripts for `esbuild` and `sharp`. CI and
+Vercel skip every dependency script instead, and generate the one artifact the
+site needs — the Prisma client — with an explicit command.
