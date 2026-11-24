@@ -5,9 +5,11 @@ import StackList from './StackList.astro';
 
 interface Props {
   project: Project;
+  /** The card's title level, so it nests under the heading of its section. */
+  headingLevel?: 'h2' | 'h3';
 }
 
-const { project } = Astro.props;
+const { project, headingLevel: Heading = 'h2' } = Astro.props;
 const { title, summary, stack, cover } = project.data;
 const href = `/projects/${project.id}`;
 ---
@@ -31,9 +33,9 @@ const href = `/projects/${project.id}`;
     <div class="min-w-0 flex-1">
       <ProjectMeta project={project} />
 
-      <h2 class="mt-3 font-display text-2xl leading-tight font-semibold tracking-tight text-ink">
+      <Heading class="mt-3 font-display text-2xl leading-tight font-semibold tracking-tight text-ink">
         <a class="transition-colors hover:text-accent" href={href}>{title}</a>
-      </h2>
+      </Heading>
 
       <p class="mt-2 text-pretty text-ink-muted">{summary}</p>
 

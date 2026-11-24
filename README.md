@@ -27,8 +27,9 @@ The public site of Budi Indra Gunawan: Work Entries, Projects and Posts.
 - `src/content/posts/` — one markdown file per Post, retrospectives included.
 - `public/images/projects/` — cover images referenced by Project frontmatter, served from the site's own origin.
 - `public/images/posts/` — cover images referenced by Post frontmatter, served from the site's own origin.
-- `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first, every published Project newest first, every published Post newest first, Posts carrying a tag, and Projects grouped by the Work Entry that produced them.
+- `src/lib/content.ts` — content queries used by pages, such as every Work Entry newest first, every published Project newest first, every published Post newest first, the featured Projects and Posts the home page shows, Posts carrying a tag, and Projects grouped by the Work Entry that produced them.
 - `src/lib/dates.ts` — month-and-year and full-date formatting with the matching `<time datetime>` values, in UTC so a date never shifts.
+- `src/pages/index.astro` — the home page: hero, About, featured Projects, latest Posts, and the contact call to action, in that order.
 - `src/pages/projects/` — the Projects index and the detail route.
 - `src/pages/blog/` — the Blog index and the Post detail route.
 - `src/pages/retro.astro` — the Retro index, reading the Posts tagged `retro`.
@@ -60,6 +61,8 @@ Projects are markdown files in `src/content/projects/`. Frontmatter declares `ti
 Files are loaded through a glob, so a new markdown file appears on `/work`, `/projects` or `/blog` with no code change. Frontmatter is validated against `src/content.config.ts` at build time, and a missing or malformed required field fails the build naming that field.
 
 Posts are markdown files in `src/content/posts/`. Frontmatter declares `title`, `summary`, `date` as `YYYY-MM-DD`, and `tags`; it may also declare `cover`, `featured` and `draft`. A Post's slug comes from its file name, so `rebuilding-this-site.md` serves `/blog/rebuilding-this-site`. A cover image needs `src`, `alt`, `width` and `height`, and its file lives under `public/images/posts/`. `/blog` lists published Posts newest first; a tag is displayed on the Post and its listing but is not a route. Retro is not a content type: a Post tagged `retro` appears on `/retro`, so a Retro is written exactly like any other Post. `draft: true` hides a Post from production builds, the Blog index and its detail route while keeping it visible in development.
+
+Home shows three Projects and three Posts. `featured: true` claims a slot; when fewer than three entries are flagged, the newest unflagged ones fill the remainder, and when fewer than three exist the section renders only what exists. The home page never renders an empty or placeholder card.
 
 Code fences are highlighted by Shiki at build time, in both a light and a dark palette chosen by the same signals as the rest of the theme. Each block gets a copy control that is added by script, so it never appears as a dead button without JavaScript, and code that overflows scrolls inside its own block rather than widening the page. Printing a Post drops the header, the footer and the copy controls.
 

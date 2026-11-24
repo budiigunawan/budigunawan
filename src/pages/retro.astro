@@ -23,12 +23,12 @@ const retros = await getPostsByTag('retro');
       </p>
     </div>
 
-    <div class="mt-12 max-w-[52rem]">
+    <div class="mt-12 max-w-[52rem] border-t border-rule">
       {
         retros.length > 0 ? (
           <PostList posts={retros} />
         ) : (
-          <p class="border-t border-rule pt-8 text-ink-muted">
+          <p class="pt-8 text-ink-muted">
             No retrospectives yet. The first one will appear here when the year closes.
           </p>
         )

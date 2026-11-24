@@ -13,6 +13,7 @@ export interface SocialLink {
 }
 
 const name = 'Budi Gunawan';
+const email = 'budiindra.g@gmail.com';
 
 /**
  * The single source of truth for the site's identity and canonical URL.
@@ -28,7 +29,7 @@ export const site = {
     'Budi Indra Gunawan builds web applications, mostly on the frontend, and is working toward the whole stack. Work history, projects and writing live here.',
   url: 'https://budigunawan.com',
   locale: 'en',
-  email: 'budiindra.g@gmail.com',
+  email,
   // Add entries only once the route they point at exists, so nothing in the
   // shell 404s.
   nav: [
@@ -40,7 +41,7 @@ export const site = {
   socials: {
     github: { id: 'github', label: 'GitHub', href: 'https://github.com/budiigunawan', external: true },
     linkedin: { id: 'linkedin', label: 'LinkedIn', href: 'https://www.linkedin.com/in/budiigunawan/', external: true },
-    email: { id: 'email', label: 'Email', href: 'mailto:budiindra.g@gmail.com', external: false },
+    email: { id: 'email', label: 'Email', href: `mailto:${email}`, external: false },
   } satisfies Record<SocialId, SocialLink>,
 } as const;
 

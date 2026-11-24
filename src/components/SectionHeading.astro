@@ -1,0 +1,16 @@
+---
+interface Props {
+  id: string;
+  title: string;
+  /** A link to the section's own index, for the sections that have one. */
+  link?: { href: string; label: string };
+}
+
+const { id, title, link } = Astro.props;
+---
+
+<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+  <h2 id={id} class="font-display text-3xl leading-tight font-semibold tracking-tight text-ink">{title}</h2>
+
+  {link && <a class="link text-sm" href={link.href}>{link.label}</a>}
+</div>

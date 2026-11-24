@@ -1,10 +1,17 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
+import PostList from '../components/PostList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import SectionHeading from '../components/SectionHeading.astro';
 import { site } from '../config/site';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getFeaturedPosts, getFeaturedProjects } from '../lib/content';
+
+const projects = await getFeaturedProjects();
+const posts = await getFeaturedPosts();
 ---
 
 <BaseLayout>
-  <section class="shell py-20 sm:py-28">
+  <section class="shell pt-16 pb-14 sm:pt-24 sm:pb-20">
     <div class="max-w-[46rem]">
       <p class="eyebrow">{site.fullName}</p>
 
@@ -13,33 +20,72 @@ import { site } from '../config/site';
       </h1>
 
       <p class="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
-        I build web applications, mostly on the frontend, and I'm working toward the whole stack. This is where my
-        work and writing will live.
+        I build web applications, mostly on the frontend, and I'm working toward the whole stack. This is the record of
+        what I've shipped, where I've worked, and what I've learned writing it.
       </p>
 
-      <div class="mt-10 flex flex-wrap items-center gap-3">
+      <div class="mt-8 flex flex-wrap items-center gap-3">
         <a class="button button-primary" href={site.socials.email.href}>Email me</a>
-        <a
-          class="button"
-          href={site.socials.github.href}
-          rel="me noopener"
-          target="_blank"
-        >
-          GitHub<span class="sr-only"> (opens in a new tab)</span>
-        </a>
-        <a
-          class="button"
-          href={site.socials.linkedin.href}
-          rel="me noopener"
-          target="_blank"
-        >
-          LinkedIn<span class="sr-only"> (opens in a new tab)</span>
-        </a>
+        <a class="button" href="/work">See my work</a>
       </div>
+    </div>
+  </section>
 
-      <p class="mt-16 border-t border-rule pt-6 text-sm leading-relaxed text-ink-muted">
-        This site is being rebuilt. The career timeline, projects and writing arrive as each one is finished.
+  <section class="shell pb-14 sm:pb-20" aria-labelledby="about-heading">
+    <div class="max-w-[46rem] border-t border-rule pt-8">
+      <SectionHeading id="about-heading" title="About" />
+
+      <p class="mt-4 text-lg leading-relaxed text-ink-muted text-pretty">
+        I'm Budi. I've spent the last few years building e-commerce software: storefronts, order management systems and
+        the internal tools that keep them running. I care about interfaces that stay simple when the system behind them
+        gets complicated, and I'm working toward the whole stack — the API and the data as well as the screen.
       </p>
+
+      <p class="mt-4 text-lg leading-relaxed text-ink-muted text-pretty">
+        Available for full-time frontend and fullstack roles.
+      </p>
+    </div>
+  </section>
+
+  {
+    projects.length > 0 && (
+      <section class="shell pb-14 sm:pb-20" aria-labelledby="projects-heading">
+        <div class="max-w-[56rem] border-t border-rule pt-8">
+          <SectionHeading id="projects-heading" title="Projects" link={{ href: '/projects', label: 'All projects' }} />
+        </div>
+
+        <div class="mt-2 max-w-[56rem]">
+          {projects.map((project) => <ProjectCard project={project} headingLevel="h3" />)}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    posts.length > 0 && (
+      <section class="shell pb-14 sm:pb-20" aria-labelledby="writing-heading">
+        <div class="max-w-[52rem] border-t border-rule pt-8">
+          <SectionHeading id="writing-heading" title="Writing" link={{ href: '/blog', label: 'All posts' }} />
+        </div>
+
+        <div class="mt-2 max-w-[52rem]">
+          <PostList posts={posts} headingLevel="h3" />
+        </div>
+      </section>
+    )
+  }
+
+  <section class="shell pb-20 sm:pb-28" aria-labelledby="contact-heading">
+    <div class="max-w-[46rem] border-t border-rule pt-8">
+      <SectionHeading id="contact-heading" title="Get in touch" />
+
+      <p class="mt-4 text-lg leading-relaxed text-ink-muted text-pretty">
+        Whether it's a role, a question or just to say hello, email is the fastest way to reach me.
+      </p>
+
+      <div class="mt-6">
+        <a class="button button-primary" href={site.socials.email.href}>{site.email}</a>
+      </div>
     </div>
   </section>
 </BaseLayout>
