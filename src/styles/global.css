@@ -145,4 +145,146 @@
   .entry-body img {
     @apply mt-6 w-full rounded-lg border border-rule;
   }
+
+  /* A Post body reuses the entry prose rules and adds what long-form reading
+   * needs: a looser rhythm, a measure capped in characters, and code. */
+  .post-body {
+    @apply mt-10 max-w-[68ch] text-[1.0625rem] leading-[1.75] text-ink-muted;
+  }
+
+  .post-body > :first-child {
+    @apply mt-0;
+  }
+
+  .post-body p {
+    @apply mt-5 text-pretty;
+  }
+
+  .post-body ul {
+    @apply mt-5 list-disc space-y-2 pl-5;
+  }
+
+  .post-body ol {
+    @apply mt-5 list-decimal space-y-2 pl-5;
+  }
+
+  .post-body li > ul,
+  .post-body li > ol {
+    @apply mt-2;
+  }
+
+  .post-body strong {
+    @apply font-semibold text-ink;
+  }
+
+  .post-body h2 {
+    @apply mt-12 font-display text-2xl leading-tight font-semibold tracking-tight text-ink;
+  }
+
+  .post-body h3 {
+    @apply mt-10 font-display text-xl leading-tight font-semibold tracking-tight text-ink;
+  }
+
+  .post-body a {
+    @apply text-accent underline decoration-1 underline-offset-4 transition-colors hover:text-accent-strong;
+  }
+
+  .post-body img {
+    @apply mt-6 h-auto w-full rounded-lg border border-rule;
+  }
+
+  .post-body blockquote {
+    @apply mt-6 border-l-2 border-accent pl-5 text-pretty text-ink;
+  }
+
+  .post-body hr {
+    @apply mt-10 border-rule;
+  }
+
+  .post-body :not(pre) > code {
+    @apply rounded-sm border border-rule bg-surface px-1 py-0.5 font-mono text-[0.875em] text-ink;
+  }
+
+  .code-block {
+    @apply relative mt-6;
+  }
+
+  /* The top strip belongs to the copy button, so it never covers code. */
+  .code-block pre {
+    @apply overflow-x-auto rounded-lg border border-rule bg-surface px-4 pt-12 pb-3 font-mono text-[0.875rem] leading-relaxed;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .code-copy {
+    @apply absolute top-2 right-2 inline-flex min-h-10 items-center justify-center rounded-full border border-rule bg-canvas px-3 text-xs font-medium text-ink-muted transition-colors hover:border-accent hover:text-accent;
+  }
+}
+
+/* Shiki emits both palettes as custom properties when two themes are
+ * configured. Pick one from the same signals the colour tokens use. */
+.astro-code,
+.astro-code span {
+  color: var(--shiki-light);
+  font-style: var(--shiki-light-font-style);
+  font-weight: var(--shiki-light-font-weight);
+  text-decoration: var(--shiki-light-text-decoration);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .astro-code,
+  :root:not([data-theme="light"]) .astro-code span {
+    color: var(--shiki-dark);
+    font-style: var(--shiki-dark-font-style);
+    font-weight: var(--shiki-dark-font-weight);
+    text-decoration: var(--shiki-dark-text-decoration);
+  }
+}
+
+:root[data-theme="dark"] .astro-code,
+:root[data-theme="dark"] .astro-code span {
+  color: var(--shiki-dark);
+  font-style: var(--shiki-dark-font-style);
+  font-weight: var(--shiki-dark-font-weight);
+  text-decoration: var(--shiki-dark-text-decoration);
+}
+
+@media print {
+  /* Paper is light. Pin the scheme so a dark theme or a dark OS preference
+   * cannot print near-white text on white. */
+  :root,
+  :root[data-theme="light"],
+  :root[data-theme="dark"] {
+    color-scheme: light;
+  }
+
+  /* Shiki's palettes are selected by selectors, not by `color-scheme`. */
+  .astro-code,
+  .astro-code span {
+    color: var(--shiki-light) !important;
+    font-style: var(--shiki-light-font-style) !important;
+    font-weight: var(--shiki-light-font-weight) !important;
+    text-decoration: var(--shiki-light-text-decoration) !important;
+  }
+
+  .post-body {
+    max-width: none;
+  }
+
+  .code-block {
+    break-inside: avoid;
+  }
+
+  /* There is no scrolling on paper, so long lines wrap and the strip
+   * reserved for the hidden copy button collapses. */
+  .code-block pre {
+    overflow: visible !important;
+    overflow-wrap: anywhere;
+    padding-top: 0.75rem;
+    white-space: pre-wrap;
+    border-color: #b9b0a4;
+  }
+
+  .code-copy {
+    display: none;
+  }
 }

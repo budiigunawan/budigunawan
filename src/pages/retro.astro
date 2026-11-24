@@ -1,0 +1,38 @@
+---
+import PostList from '../components/PostList.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getPostsByTag } from '../lib/content';
+
+const retros = await getPostsByTag('retro');
+---
+
+<BaseLayout
+  title="Retro"
+  description="Yearly retrospectives by Budi Indra Gunawan, reviewing one year of work and life at a time, newest first."
+>
+  <section class="shell py-16 sm:py-24">
+    <div class="max-w-[46rem]">
+      <p class="eyebrow">Looking back</p>
+
+      <h1 class="mt-5 font-display text-[clamp(2.25rem,7vw,4rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        Retro
+      </h1>
+
+      <p class="mt-6 text-lg leading-relaxed text-ink-muted text-pretty">
+        Yearly retrospectives, newest first. Each one is a Post like any other, tagged for this shelf.
+      </p>
+    </div>
+
+    <div class="mt-12 max-w-[52rem]">
+      {
+        retros.length > 0 ? (
+          <PostList posts={retros} />
+        ) : (
+          <p class="border-t border-rule pt-8 text-ink-muted">
+            No retrospectives yet. The first one will appear here when the year closes.
+          </p>
+        )
+      }
+    </div>
+  </section>
+</BaseLayout>

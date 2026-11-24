@@ -6,7 +6,8 @@ import { glob } from 'astro/loaders';
  * relationship; its body records responsibilities, never Projects. An absent
  * end date means the role is current. A Project is a piece of shipped
  * software, personal or professional, and may name the Work Entry that
- * produced it.
+ * produced it. A Post is a piece of writing, technical or personal; Retro is a
+ * tag on a Post, not a separate collection.
  */
 const month = z
   .string()
@@ -82,4 +83,33 @@ const projects = defineCollection({
     .strict(),
 });
 
-export const collections = { work, projects };
+const posts = defineCollection({
+  loader: glob({ base: './src/content/posts', pattern: '**/*.md' }),
+  schema: z
+    .object({
+      title: z.string().trim().min(1),
+      summary: z.string().trim().min(1),
+      date: day,
+      tags: z.array(z.string().trim().min(1)).min(1),
+      cover: z
+        .object({
+          src: z
+            .string()
+            .trim()
+            .regex(
+              /^\/images\/posts\/[\w.-]+$/,
+              'expected a path under public/images/posts/, such as /images/posts/example.png',
+            ),
+          alt: z.string().trim().min(1),
+          width: z.number().int().positive(),
+          height: z.number().int().positive(),
+        })
+        .strict()
+        .optional(),
+      featured: z.boolean().default(false),
+      draft: z.boolean().default(false),
+    })
+    .strict(),
+});
+
+export const collections = { work, projects, posts };

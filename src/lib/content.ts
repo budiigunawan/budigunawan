@@ -2,6 +2,7 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 
 export type WorkEntry = CollectionEntry<'work'>;
 export type Project = CollectionEntry<'projects'>;
+export type Post = CollectionEntry<'posts'>;
 
 /**
  * Every Work Entry, newest start date first, with the company name breaking
@@ -58,4 +59,26 @@ export async function getProjectsByWorkEntry(): Promise<Map<string, Project[]>> 
   }
 
   return byWorkEntry;
+}
+
+/**
+ * Every published Post, newest first. Drafts are omitted from production
+ * builds but stay visible in development, so they can be reviewed before they
+ * are published.
+ */
+export async function getPosts(): Promise<Post[]> {
+  const posts = await getCollection('posts');
+  const published = posts.filter((post) => !import.meta.env.PROD || !post.data.draft);
+
+  return published.sort(
+    (a, b) => b.data.date.getTime() - a.data.date.getTime() || a.data.title.localeCompare(b.data.title),
+  );
+}
+
+/** Published Posts carrying a tag, matched without regard to case, newest first. */
+export async function getPostsByTag(tag: string): Promise<Post[]> {
+  const wanted = tag.trim().toLowerCase();
+  const posts = await getPosts();
+
+  return posts.filter((post) => post.data.tags.some((value) => value.trim().toLowerCase() === wanted));
 }
