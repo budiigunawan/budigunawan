@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The only record the site writes at runtime. `clientKey` is a keyed hash of
+/// the sender's address, kept so the rolling rate limit can count past
+/// submissions without storing the address itself.
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  message   String
+  clientKey String   @map("client_key")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([clientKey, createdAt])
+  @@map("contact_messages")
+}

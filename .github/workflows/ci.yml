@@ -30,7 +30,15 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Dependency lifecycle scripts never run in CI. The only generated
+        # artifact the site needs is the Prisma client, generated below.
+        run: pnpm install --frozen-lockfile --ignore-scripts
+
+      - name: Generate Prisma client
+        run: pnpm exec prisma generate
+
+      - name: Test
+        run: pnpm exec vitest run
 
       - name: Type check
         run: pnpm check
