@@ -3,6 +3,7 @@ import { getCollection, getEntry, type CollectionEntry } from 'astro:content';
 export type WorkEntry = CollectionEntry<'work'>;
 export type Project = CollectionEntry<'projects'>;
 export type Post = CollectionEntry<'posts'>;
+export type Legal = CollectionEntry<'legal'>;
 
 /** Newest first, with the title breaking date ties. */
 function newestFirst<T extends { data: { date: Date; title: string } }>(a: T, b: T): number {
@@ -108,6 +109,20 @@ export async function getPosts(): Promise<Post[]> {
  */
 export async function getFeaturedPosts(): Promise<Post[]> {
   return selectFeatured(await getPosts(), HOME_FEATURED_COUNT);
+}
+
+/**
+ * The Legal entry with this slug. A policy page is a promise to the reader, so
+ * a missing entry fails the build rather than rendering an empty page.
+ */
+export async function getLegalEntry(slug: string): Promise<Legal> {
+  const entry = await getEntry('legal', slug);
+
+  if (!entry) {
+    throw new Error(`No Legal entry named "${slug}" exists in src/content/legal/.`);
+  }
+
+  return entry;
 }
 
 /** Published Posts carrying a tag, matched without regard to case, newest first. */

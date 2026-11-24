@@ -30,3 +30,7 @@ _Avoid_: inquiry, email, submission
 **Resume**:
 The canonical PDF record of Budi's history, aimed at recruiters. It is a file, not a page: edited in Google Drive, published on the site as a copy.
 _Avoid_: CV, resume page
+
+**Legal entry**:
+A policy page of the site, such as Privacy, written as content so its wording can change without a code change.
+_Avoid_: policy document, legal route

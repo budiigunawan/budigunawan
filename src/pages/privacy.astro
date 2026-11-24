@@ -1,0 +1,34 @@
+---
+import { render } from 'astro:content';
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getLegalEntry } from '../lib/content';
+import { dayDatetime, formatFullDate } from '../lib/dates';
+
+const entry = await getLegalEntry('privacy');
+const { title, date } = entry.data;
+const { Content } = await render(entry);
+---
+
+<BaseLayout
+  title={title}
+  description="How this site handles the information you send through the Contact form."
+>
+  <article class="shell py-16 sm:py-24">
+    <div class="max-w-[42rem]">
+      <p class="eyebrow">Legal</p>
+
+      <h1 class="mt-5 font-display text-[clamp(2.25rem,7vw,3.5rem)] leading-[1.05] font-semibold tracking-tight text-balance">
+        {title}
+      </h1>
+
+      <p class="section-label mt-5">
+        Last updated <time datetime={dayDatetime(date)}>{formatFullDate(date)}</time>
+      </p>
+
+      <div class="post-body">
+        <Content />
+      </div>
+    </div>
+  </article>
+</BaseLayout>
