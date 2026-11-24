@@ -7,7 +7,9 @@ import { glob } from 'astro/loaders';
  * end date means the role is current. A Project is a piece of shipped
  * software, personal or professional, and may name the Work Entry that
  * produced it. A Post is a piece of writing, technical or personal; Retro is a
- * tag on a Post, not a separate collection.
+ * tag on a Post, not a separate collection. A Legal entry is a standalone
+ * policy page, such as Privacy, authored as content so its wording changes
+ * without a code change.
  */
 const month = z
   .string()
@@ -112,4 +114,14 @@ const posts = defineCollection({
     .strict(),
 });
 
-export const collections = { work, projects, posts };
+const legal = defineCollection({
+  loader: glob({ base: './src/content/legal', pattern: '**/*.md' }),
+  schema: z
+    .object({
+      title: z.string().trim().min(1),
+      date: day,
+    })
+    .strict(),
+});
+
+export const collections = { work, projects, posts, legal };

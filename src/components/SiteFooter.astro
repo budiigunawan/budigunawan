@@ -8,22 +8,44 @@ const year = new Date().getFullYear();
   <div class="shell flex flex-col gap-4 py-8 sm:flex-row sm:items-center sm:justify-between">
     <p class="text-sm text-ink-muted">&copy; {year} {site.fullName}</p>
 
-    <ul class="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Elsewhere">
-      {
-        socialLinks.map((social) => (
-          <li>
-            <a
-              class="link inline-flex min-h-11 items-center text-sm"
-              href={social.href}
-              rel={social.external ? 'me noopener' : undefined}
-              target={social.external ? '_blank' : undefined}
-            >
-              {social.label}
-              {social.external && <span class="sr-only"> (opens in a new tab)</span>}
-            </a>
-          </li>
-        ))
-      }
-    </ul>
+    <div class="flex flex-wrap items-center gap-x-6 gap-y-1">
+      <nav aria-label="Site">
+        <ul class="flex flex-wrap items-center gap-x-5 gap-y-1">
+          {
+            site.footerNav.map((item) => (
+              <li>
+                <a
+                  class="link inline-flex min-h-11 items-center text-sm"
+                  href={item.href}
+                  target={item.newTab ? '_blank' : undefined}
+                  rel={item.newTab ? 'noopener' : undefined}
+                >
+                  {item.label}
+                  {item.newTab && <span class="sr-only"> (opens in a new tab)</span>}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+
+      <ul class="flex flex-wrap items-center gap-x-5 gap-y-1" aria-label="Elsewhere">
+        {
+          socialLinks.map((social) => (
+            <li>
+              <a
+                class="link inline-flex min-h-11 items-center text-sm"
+                href={social.href}
+                rel={social.external ? 'me noopener' : undefined}
+                target={social.external ? '_blank' : undefined}
+              >
+                {social.label}
+                {social.external && <span class="sr-only"> (opens in a new tab)</span>}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
   </div>
 </footer>
